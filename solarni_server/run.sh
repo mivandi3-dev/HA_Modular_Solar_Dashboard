@@ -18,5 +18,6 @@ fi
 export SOLARI_PUBLISH_SENSORS="$(bashio::config 'publish_sensors' | sed 's/true/1/;s/false/0/')"
 export SOLARI_LOG_LEVEL="$(bashio::config 'log_level')"
 mkdir -p /share/solarni
+echo "${SOLARI_PORT}" > /tmp/solari_port  # za Docker HEALTHCHECK
 bashio::log.info "Solarni poslužitelj – API na portu ${SOLARI_PORT}"
 exec python3 -m solari_server

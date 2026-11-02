@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from solari_server import config, ha_api, hass_device
+from solari_server import config, ha_api
 from solari_server.data import days_from_aggregates
 from solari_server.devices import device_capabilities, read_plant
 from solari_server.storage import Db, Reading, compact_history

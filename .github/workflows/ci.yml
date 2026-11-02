@@ -21,3 +21,26 @@ jobs:
       - uses: frenck/action-addon-linter@v2
         with:
           path: "./${{ matrix.addon }}"
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build images (amd64, HA base image)
+        run: |
+          docker build -t solarni-server --build-arg BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12-alpine3.20 solarni_server
+          docker build -t solarni-dashboard --build-arg BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12-alpine3.20 solarni_dashboard
+          docker build -t solarni-server-standalone -f solarni_server/Dockerfile.standalone solarni_server
+      - name: Smoke test (server + dashboard together)
+        run: |
+          docker network create solarni
+          docker run -d --name srv --network solarni -e SOLARI_DATA_DIR=/tmp/d -e SOLARI_TOKEN_FILE=/tmp/share/api_token \
+            -v solarni_share:/tmp/share --entrypoint python3 solarni-server -m solari_server
+          sleep 8
+          docker run -d --name dash --network solarni -p 8099:8099 -e SOLARI_DATA_DIR=/tmp/d -e SOLARI_SERVER_URL=http://srv:8700 \
+            -e SOLARI_TOKEN_FILE=/tmp/share/api_token -v solarni_share:/tmp/share --entrypoint python3 solarni-dashboard -m solari_dashboard
+          sleep 8
+          docker logs srv; docker logs dash
+          curl -fsS http://localhost:8099/ | grep -q "Solarni monitor"
+          curl -fsS -X POST -H 'Content-Type: application/json' -d '{"args":[]}' http://localhost:8099/api/bridge/get_dashboard | grep -q '"realtime"'
+          curl -fsS -X POST -H 'Content-Type: application/json' -d '{"args":[]}' http://localhost:8099/api/bridge/get_state | grep -q '"device_types"'
+          docker run --rm --entrypoint python3 solarni-server -c "import PIL, serial, paho.mqtt, aiohttp; print('ok')"

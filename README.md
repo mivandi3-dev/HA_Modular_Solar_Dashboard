@@ -48,7 +48,7 @@ locked with a PIN (public screens).
 **Solarni poslužitelj:** `api_token` (empty = generated), `publish_sensors` (MQTT device when Mosquitto is installed,
 otherwise sensors via the HA API), `ha_notify` (`persistent_notification`, `notify.mobile_app_<phone>` or empty – alerts
 in Home Assistant, in addition to email), `compact_after_days` (readings older than this are reduced to 5-minute averages,
-the daily peak is kept; 0 = never), port 8700 (Network). A watchdog restarts the add-on if recording stops.
+the daily peak is kept; 0 = never), port 8700 (Network). A health check (Docker HEALTHCHECK) restarts the add-on if recording stops.
 
 **Solarni monitor:** `server_url` (`http://172.30.32.1:8700` for the add-on on the same HA, otherwise `http://IP:8700`),
 `api_token` (empty on the same HA), port 8600 for the optional read-only network view.
@@ -99,7 +99,7 @@ PIN-om (javni zasloni).
 **Solarni poslužitelj:** `api_token` (prazno = izradi se sam), `publish_sensors` (MQTT uređaj kad je Mosquitto instaliran,
 inače senzori preko HA API-ja), `ha_notify` (`persistent_notification`, `notify.mobile_app_<mobitel>` ili prazno – obavijesti
 u Home Assistantu, uz e-poštu), `compact_after_days` (starija očitanja sažimaju se na 5-minutne prosjeke, dnevni vrh ostaje;
-0 = nikad), port 8700 (Mreža). Watchdog ponovno pokrene dodatak ako bilježenje stane.
+0 = nikad), port 8700 (Mreža). Provjera zdravlja (Docker HEALTHCHECK) ponovno pokrene dodatak ako bilježenje stane.
 
 **Solarni monitor:** `server_url` (`http://172.30.32.1:8700` za dodatak na istom HA, inače `http://IP:8700`), `api_token`
 (prazno na istom HA), port 8600 za izborni pregled iz mreže (samo čitanje).
