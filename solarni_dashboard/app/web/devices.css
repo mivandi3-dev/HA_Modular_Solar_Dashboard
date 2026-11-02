@@ -1,0 +1,36 @@
+/* Widgeti uređaja (widgets.js: battery, inverter_temp, grid_quality) – boje iz varijabli teme i palete */
+.dev-battery { display: flex; align-items: center; gap: 22px; height: calc(100% - 34px); }
+.dev-battery svg { flex: none; }
+.dev-battery .big, .dev-temp .big { font-size: 2.6rem; font-weight: 700; line-height: 1; color: var(--text); }
+.dev-battery .big small, .dev-temp .big small { font-size: 1.1rem; font-weight: 600; color: var(--muted); margin-left: 4px; }
+.dev-state { margin-top: 10px; font-size: .98rem; font-weight: 600; color: var(--muted); }
+.dev-state.charge { color: var(--green); }
+.dev-state.discharge { color: var(--amber); }
+.dev-temp { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 10px; }
+.dev-temp .bar { flex: 1; height: 10px; border-radius: 6px; background: var(--line); overflow: hidden; }
+.dev-temp .bar i { display: block; height: 100%; border-radius: 6px; }
+.dev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
+.dev-grid .v { font-size: 1.9rem; font-weight: 700; color: var(--text); line-height: 1.1; }
+.dev-grid .v small { font-size: 1rem; color: var(--muted); margin-left: 4px; }
+.dev-grid .k { font-size: .85rem; color: var(--muted); margin-bottom: 4px; }
+.dev-ok { color: var(--green); } .dev-warn { color: var(--amber); } .dev-bad { color: var(--red); }
+
+/* prognoza za danas i sljedećih 5 dana: stupaca koliko ima dana (stil iz Python verzije ima fiksno 3) */
+.fc-grid { grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 8px; }
+.fc-day .bar { width: 24px; }
+.fc-day .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.wx-row { padding: 3px 0; }
+.wx-list { gap: 2px; margin-top: 6px; }
+.fc-day .v { white-space: nowrap; font-size: .98rem; }
+.fc-day .v small { font-size: .68rem; margin-left: 2px; }
+.fc-day .so-far { white-space: nowrap; font-size: .68rem; }
+
+/* off-grid sustav (3.2) */
+.dev-volt { margin-top: 6px; color: var(--muted); font-size: .9rem; }
+.dev-bar { height: 8px; border-radius: 99px; background: var(--track, rgba(148,163,184,.2)); overflow: hidden; margin-top: 10px; }
+.dev-bar span { display: block; height: 100%; border-radius: 99px; }
+.dev-big { font-size: 2.3rem; font-weight: 800; line-height: 1.1; margin: 4px 0 8px; font-variant-numeric: tabular-nums; }
+.dev-big small { font-size: .45em; font-weight: 600; color: var(--muted); margin-left: 4px; }
+
+/* klizači u bojama teme i palete (dashboard, izbornik Widgeti) – umjesto bijelih Windows klizača */
+html { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--text, #94A3B8) 28%, transparent) transparent; }

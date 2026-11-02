@@ -1,0 +1,813 @@
+{
+ "cols": 12,
+ "rows": 5,
+ "categories": [
+  "Proizvodnja",
+  "Za posjetitelje",
+  "Vrijeme i sunce",
+  "Sustav",
+  "Uređaj"
+ ],
+ "widgets": [
+  {
+   "key": "kpi_strip",
+   "title": "Traka pokazatelja",
+   "description": "Trenutna snaga, ovaj mjesec, manje CO₂ i ukupno – s mini grafikonima.",
+   "icon": "📊",
+   "category": "Proizvodnja",
+   "size": [
+    12,
+    1
+   ],
+   "minSize": [
+    8,
+    1
+   ],
+   "maxSize": [
+    12,
+    1
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "tile_power",
+   "title": "Trenutna snaga",
+   "description": "Snaga elektrane uživo i udio instalirane snage.",
+   "icon": "⚡",
+   "category": "Proizvodnja",
+   "size": [
+    3,
+    1
+   ],
+   "minSize": [
+    2,
+    1
+   ],
+   "maxSize": [
+    6,
+    1
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "tile_today",
+   "title": "Proizvodnja danas",
+   "description": "Energija proizvedena danas, s krivuljom dana.",
+   "icon": "☀️",
+   "category": "Proizvodnja",
+   "size": [
+    3,
+    1
+   ],
+   "minSize": [
+    2,
+    1
+   ],
+   "maxSize": [
+    6,
+    1
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "tile_month",
+   "title": "Proizvodnja ovaj mjesec",
+   "description": "Mjesec do danas i usporedba s prošlim mjesecom.",
+   "icon": "📅",
+   "category": "Proizvodnja",
+   "size": [
+    3,
+    1
+   ],
+   "minSize": [
+    2,
+    1
+   ],
+   "maxSize": [
+    6,
+    1
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "tile_year",
+   "title": "Proizvodnja ove godine",
+   "description": "Godina do danas i usporedba s istim razdobljem lani.",
+   "icon": "🗓️",
+   "category": "Proizvodnja",
+   "size": [
+    3,
+    1
+   ],
+   "minSize": [
+    2,
+    1
+   ],
+   "maxSize": [
+    6,
+    1
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "tile_total",
+   "title": "Ukupno proizvedeno",
+   "description": "Sva energija od puštanja u rad.",
+   "icon": "🔋",
+   "category": "Proizvodnja",
+   "size": [
+    3,
+    1
+   ],
+   "minSize": [
+    2,
+    1
+   ],
+   "maxSize": [
+    6,
+    1
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "today_curve",
+   "title": "Krivulja snage danas",
+   "description": "Snaga kroz dan (prosjek 5 min) s vrhom dana.",
+   "icon": "📈",
+   "category": "Proizvodnja",
+   "size": [
+    5,
+    2
+   ],
+   "minSize": [
+    4,
+    2
+   ],
+   "maxSize": [
+    12,
+    4
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "bars",
+   "title": "Proizvodnja po danima",
+   "description": "Stupčasti grafikon zadnjih dana s prosjekom.",
+   "icon": "📶",
+   "category": "Proizvodnja",
+   "size": [
+    5,
+    2
+   ],
+   "minSize": [
+    4,
+    2
+   ],
+   "maxSize": [
+    12,
+    4
+   ],
+   "needsMeter": false,
+   "options": [
+    {
+     "key": "days",
+     "label": "Broj dana",
+     "kind": "choice",
+     "default": 14,
+     "choices": [
+      [
+       7,
+       "7 dana"
+      ],
+      [
+       14,
+       "14 dana"
+      ],
+      [
+       30,
+       "30 dana"
+      ]
+     ],
+     "maxLen": 80
+    }
+   ]
+  },
+  {
+   "key": "monthly",
+   "title": "Proizvodnja po mjesecima",
+   "description": "Mjesečna proizvodnja – vidi se kako sunce mijenja godinu.",
+   "icon": "📆",
+   "category": "Proizvodnja",
+   "size": [
+    6,
+    2
+   ],
+   "minSize": [
+    4,
+    2
+   ],
+   "maxSize": [
+    12,
+    4
+   ],
+   "needsMeter": false,
+   "options": [
+    {
+     "key": "months",
+     "label": "Razdoblje",
+     "kind": "choice",
+     "default": 12,
+     "choices": [
+      [
+       6,
+       "6 mjeseci"
+      ],
+      [
+       12,
+       "12 mjeseci"
+      ],
+      [
+       24,
+       "24 mjeseca"
+      ]
+     ],
+     "maxLen": 80
+    }
+   ]
+  },
+  {
+   "key": "speedo",
+   "title": "Brzinomjer snage",
+   "description": "Trenutna snaga na skali i vrh dana.",
+   "icon": "🧭",
+   "category": "Proizvodnja",
+   "size": [
+    3,
+    2
+   ],
+   "minSize": [
+    3,
+    2
+   ],
+   "maxSize": [
+    6,
+    4
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "today_goal",
+   "title": "Danas prema prosjeku",
+   "description": "Koliko je današnji dan u odnosu na prosječan dan zadnjih 14 dana.",
+   "icon": "🎯",
+   "category": "Proizvodnja",
+   "size": [
+    3,
+    2
+   ],
+   "minSize": [
+    2,
+    2
+   ],
+   "maxSize": [
+    5,
+    3
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "flow",
+   "title": "Tok energije",
+   "description": "Crtež zgrade s tokom energije od panela do potrošnje.",
+   "icon": "🏢",
+   "category": "Proizvodnja",
+   "size": [
+    7,
+    2
+   ],
+   "minSize": [
+    6,
+    2
+   ],
+   "maxSize": [
+    12,
+    4
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "records",
+   "title": "Rekordi elektrane",
+   "description": "Najbolji dan, najbolji mjesec i najveća snaga ikad.",
+   "icon": "🏆",
+   "category": "Proizvodnja",
+   "size": [
+    4,
+    2
+   ],
+   "minSize": [
+    3,
+    2
+   ],
+   "maxSize": [
+    6,
+    3
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "tile_grid",
+   "title": "Potrošnja iz mreže",
+   "description": "Snaga koju zgrada trenutno vuče iz mreže (mjerač na loggeru) i vrh dana.",
+   "icon": "🔌",
+   "category": "Proizvodnja",
+   "size": [
+    3,
+    1
+   ],
+   "minSize": [
+    2,
+    1
+   ],
+   "maxSize": [
+    6,
+    1
+   ],
+   "needsMeter": true,
+   "options": []
+  },
+  {
+   "key": "tile_selfuse",
+   "title": "Udio sunca u potrošnji",
+   "description": "Koliki dio struje zgrade upravo dolazi sa sunca (uz mjerač).",
+   "icon": "🏠",
+   "category": "Proizvodnja",
+   "size": [
+    3,
+    1
+   ],
+   "minSize": [
+    2,
+    1
+   ],
+   "maxSize": [
+    6,
+    1
+   ],
+   "needsMeter": true,
+   "options": []
+  },
+  {
+   "key": "savings",
+   "title": "Ušteda",
+   "description": "Koliko je elektrana uštedjela danas, ovaj mjesec, ove godine i ukupno (cijene u postavkama).",
+   "icon": "💶",
+   "category": "Proizvodnja",
+   "size": [
+    4,
+    2
+   ],
+   "minSize": [
+    3,
+    2
+   ],
+   "maxSize": [
+    6,
+    3
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "environment",
+   "title": "Utjecaj na okoliš",
+   "description": "Stabla, smanjena emisija CO₂ i kilometri automobilom.",
+   "icon": "🌳",
+   "category": "Za posjetitelje",
+   "size": [
+    4,
+    2
+   ],
+   "minSize": [
+    3,
+    2
+   ],
+   "maxSize": [
+    6,
+    3
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "tile_co2",
+   "title": "Manje CO₂",
+   "description": "Ušteda CO₂ ovaj mjesec.",
+   "icon": "🌍",
+   "category": "Za posjetitelje",
+   "size": [
+    3,
+    1
+   ],
+   "minSize": [
+    2,
+    1
+   ],
+   "maxSize": [
+    6,
+    1
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "equivalents",
+   "title": "Što smo proizveli",
+   "description": "Energija izražena kroz kućanstva, punjenja mobitela i e-auto.",
+   "icon": "💡",
+   "category": "Za posjetitelje",
+   "size": [
+    4,
+    2
+   ],
+   "minSize": [
+    3,
+    2
+   ],
+   "maxSize": [
+    6,
+    3
+   ],
+   "needsMeter": false,
+   "options": [
+    {
+     "key": "period",
+     "label": "Razdoblje",
+     "kind": "choice",
+     "default": "month",
+     "choices": [
+      [
+       "today",
+       "Danas"
+      ],
+      [
+       "month",
+       "Ovaj mjesec"
+      ],
+      [
+       "year",
+       "Ova godina"
+      ],
+      [
+       "total",
+       "Ukupno"
+      ]
+     ],
+     "maxLen": 80
+    }
+   ]
+  },
+  {
+   "key": "facts",
+   "title": "Znate li?",
+   "description": "Zanimljivosti o sunčevoj energiji koje se izmjenjuju.",
+   "icon": "❓",
+   "category": "Za posjetitelje",
+   "size": [
+    4,
+    2
+   ],
+   "minSize": [
+    3,
+    1
+   ],
+   "maxSize": [
+    8,
+    3
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "clock",
+   "title": "Sat i datum",
+   "description": "Veliki sat s datumom.",
+   "icon": "🕒",
+   "category": "Za posjetitelje",
+   "size": [
+    3,
+    1
+   ],
+   "minSize": [
+    2,
+    1
+   ],
+   "maxSize": [
+    6,
+    2
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "message",
+   "title": "Poruka",
+   "description": "Vlastiti naslov i tekst (dobrodošlica, obavijest).",
+   "icon": "💬",
+   "category": "Za posjetitelje",
+   "size": [
+    4,
+    1
+   ],
+   "minSize": [
+    2,
+    1
+   ],
+   "maxSize": [
+    12,
+    2
+   ],
+   "needsMeter": false,
+   "options": [
+    {
+     "key": "title",
+     "label": "Naslov",
+     "kind": "text",
+     "default": "Dobrodošli",
+     "choices": [],
+     "maxLen": 60
+    },
+    {
+     "key": "text",
+     "label": "Tekst",
+     "kind": "text",
+     "default": "Ova zgrada dio struje proizvodi vlastitom solarnom elektranom.",
+     "choices": [],
+     "maxLen": 240
+    }
+   ]
+  },
+  {
+   "key": "sun",
+   "title": "Sunce danas",
+   "description": "Izlazak i zalazak sunca, trajanje dana i položaj sunca na nebu.",
+   "icon": "🌅",
+   "category": "Vrijeme i sunce",
+   "size": [
+    4,
+    2
+   ],
+   "minSize": [
+    3,
+    2
+   ],
+   "maxSize": [
+    6,
+    3
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "forecast_production",
+   "title": "Očekivana proizvodnja",
+   "description": "Procjena proizvodnje za danas i sljedeća dva dana iz prognoze.",
+   "icon": "🔮",
+   "category": "Vrijeme i sunce",
+   "size": [
+    4,
+    2
+   ],
+   "minSize": [
+    3,
+    2
+   ],
+   "maxSize": [
+    6,
+    3
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "forecast_compare",
+   "title": "Stvarno i prognoza",
+   "description": "Današnja proizvodnja u odnosu na očekivanu iz prognoze zračenja.",
+   "icon": "🔭",
+   "category": "Vrijeme i sunce",
+   "size": [
+    5,
+    2
+   ],
+   "minSize": [
+    4,
+    2
+   ],
+   "maxSize": [
+    12,
+    4
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "weather",
+   "title": "Vremenska prognoza",
+   "description": "Prognoza za tri dana s UV indeksom i vjerojatnošću kiše.",
+   "icon": "⛅",
+   "category": "Vrijeme i sunce",
+   "size": [
+    4,
+    2
+   ],
+   "minSize": [
+    3,
+    2
+   ],
+   "maxSize": [
+    6,
+    3
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "status",
+   "title": "Stanje sustava",
+   "description": "Veza s loggerom, zadnje očitanje i dostupnost podataka danas.",
+   "icon": "🛠️",
+   "category": "Sustav",
+   "size": [
+    3,
+    2
+   ],
+   "minSize": [
+    3,
+    2
+   ],
+   "maxSize": [
+    5,
+    3
+   ],
+   "needsMeter": false,
+   "options": []
+  },
+  {
+   "key": "battery",
+   "title": "Baterija",
+   "description": "Napunjenost, snaga punjenja ili pražnjenja i napon baterije (hibridni i off-grid izmjenjivači, Victron, Huawei LUNA).",
+   "icon": "🔋",
+   "size": [
+    3,
+    2
+   ],
+   "minSize": [
+    3,
+    2
+   ],
+   "maxSize": [
+    6,
+    3
+   ],
+   "needsMeter": false,
+   "needs": "battery",
+   "options": [],
+   "category": "Uređaj"
+  },
+  {
+   "key": "inverter_temp",
+   "title": "Temperatura invertera",
+   "description": "Unutarnja temperatura invertera s upozorenjem kad je povišena.",
+   "icon": "🌡️",
+   "size": [
+    3,
+    1
+   ],
+   "minSize": [
+    2,
+    1
+   ],
+   "maxSize": [
+    6,
+    2
+   ],
+   "needsMeter": false,
+   "needs": "temperature",
+   "options": [],
+   "category": "Uređaj"
+  },
+  {
+   "key": "grid_quality",
+   "title": "Mreža",
+   "description": "Napon i frekvencija mreže i jesu li u uobičajenim granicama.",
+   "icon": "🔌",
+   "size": [
+    3,
+    1
+   ],
+   "minSize": [
+    3,
+    1
+   ],
+   "maxSize": [
+    6,
+    2
+   ],
+   "needsMeter": false,
+   "needs": "grid",
+   "options": [],
+   "category": "Uređaj"
+  },
+  {
+   "key": "offgrid",
+   "title": "Off-grid sustav",
+   "description": "Potrošnja na izlazu izmjenjivača, izlazni napon i frekvencija, opterećenje i napon baterije (12/24/48 V).",
+   "icon": "🏝️",
+   "size": [
+    3,
+    2
+   ],
+   "minSize": [
+    3,
+    2
+   ],
+   "maxSize": [
+    6,
+    3
+   ],
+   "needsMeter": false,
+   "needs": "offgrid",
+   "options": [],
+   "category": "Uređaj"
+  }
+ ],
+ "defaultLayout": [
+  {
+   "id": "kpi",
+   "type": "kpi_strip",
+   "x": 0,
+   "y": 0,
+   "w": 12,
+   "h": 1,
+   "options": {}
+  },
+  {
+   "id": "today",
+   "type": "today_curve",
+   "x": 0,
+   "y": 1,
+   "w": 5,
+   "h": 2,
+   "options": {}
+  },
+  {
+   "id": "environment",
+   "type": "environment",
+   "x": 5,
+   "y": 1,
+   "w": 4,
+   "h": 2,
+   "options": {}
+  },
+  {
+   "id": "speedo",
+   "type": "speedo",
+   "x": 9,
+   "y": 1,
+   "w": 3,
+   "h": 2,
+   "options": {}
+  },
+  {
+   "id": "bars",
+   "type": "bars",
+   "x": 0,
+   "y": 3,
+   "w": 5,
+   "h": 2,
+   "options": {
+    "days": 14
+   }
+  },
+  {
+   "id": "flow",
+   "type": "flow",
+   "x": 5,
+   "y": 3,
+   "w": 7,
+   "h": 2,
+   "options": {}
+  }
+ ]
+}

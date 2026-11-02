@@ -1,0 +1,23 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install aiohttp pyserial pillow paho-mqtt pytest pytest-asyncio ruff
+      - run: ruff check --select F,E9 solarni_server/app solarni_dashboard/app tests
+      - run: python -m pytest -q
+  lint-addons:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        addon: [solarni_server, solarni_dashboard]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: frenck/action-addon-linter@v2
+        with:
+          path: "./${{ matrix.addon }}"

@@ -1,0 +1,262 @@
+/* Postavke – isti "glass" jezik kao dashboard (solar/ui.py): tamna i svijetla tema, Plus Jakarta Sans. */
+@font-face { font-family: 'Plus Jakarta Sans'; font-weight: 200 800;
+             src: url('vendor/PlusJakartaSans.ttf') format('truetype'); }
+
+:root, [data-theme="dark"] {
+  --page: radial-gradient(900px 500px at 90% 0%, #16264A 0%, transparent 60%), linear-gradient(180deg, #0B1120, #0D1424);
+  --card: rgba(22,31,51,.74); --card-solid: #1A2540; --border: rgba(255,255,255,.07); --line: rgba(255,255,255,.08);
+  --text: #E6EAF2; --muted: #94A3B8; --field: rgba(11,17,32,.6); --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --green: #71BF43; --green-soft: rgba(113,191,67,.14); --red: #F87171; --amber: #F59E0B; --blue: #4F86F7;
+}
+[data-theme="light"] {
+  --page: radial-gradient(900px 500px at 90% 0%, #DCE8FB 0%, transparent 60%), linear-gradient(180deg, #E6EEF9, #EEF2F8);
+  --card: rgba(255,255,255,.78); --card-solid: #FFFFFF; --border: rgba(255,255,255,.95); --line: rgba(15,23,42,.08);
+  --text: #0F172A; --muted: #64748B; --field: #F5F8FC; --shadow: 0 10px 30px rgba(30,64,140,.08);
+  --green: #4E9A2A; --green-soft: rgba(113,191,67,.16); --red: #DC2626; --amber: #D97706; --blue: #2F6BEA;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--page); background-attachment: fixed; color: var(--text);
+       font: 15px/1.45 'Plus Jakarta Sans', 'Segoe UI', sans-serif; }
+[hidden] { display: none !important; }
+h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -.02em; margin: 0 0 6px; }
+.lead { color: var(--muted); max-width: 760px; margin: 0 0 20px; }
+.muted { color: var(--muted); } .small { font-size: .84rem; }
+code, kbd { font: 600 .84em 'Cascadia Mono', Consolas, monospace; background: var(--field); border: 1px solid var(--line);
+            border-radius: 6px; padding: 1px 6px; }
+
+.glass { background: var(--card); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow);
+         backdrop-filter: blur(14px); }
+
+/* ---- raspored ---- */
+.layout { display: grid; grid-template-columns: 236px 1fr; grid-template-rows: 1fr auto; height: 100vh; }
+.side { grid-row: 1 / 3; padding: 22px 16px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 22px; }
+.brand { display: flex; align-items: center; gap: 12px; padding: 0 6px; }
+.brand b { display: block; font-size: 1.02rem; } .brand small { color: var(--muted); font-size: .8rem; }
+.sun { width: 34px; height: 34px; border-radius: 50%; flex: none;
+       background: radial-gradient(circle at 50% 50%, #FBBF24 0 38%, transparent 40%),
+                   conic-gradient(from 0deg, #71BF43 0 10%, transparent 10% 20%, #71BF43 20% 30%, transparent 30% 40%,
+                   #71BF43 40% 50%, transparent 50% 60%, #71BF43 60% 70%, transparent 70% 80%, #71BF43 80% 90%, transparent 90%); }
+nav { display: flex; flex-direction: column; gap: 4px; }
+nav button { font: inherit; font-weight: 600; text-align: left; color: var(--muted); background: none; border: 0;
+             border-radius: 12px; padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; }
+nav button i { font-style: normal; font-size: .8rem; width: 24px; height: 24px; display: grid; place-items: center;
+               border-radius: 8px; background: var(--field); border: 1px solid var(--line); }
+nav button:hover { color: var(--text); background: var(--field); }
+nav button.active { color: var(--text); background: var(--green-soft); }
+nav button.active i { background: var(--green); border-color: var(--green); color: #0B1120; }
+nav button.done i { color: var(--green); }
+body:not(.wizard) nav button i { display: none; }
+body:not(.wizard) .wizard-only { display: none !important; }
+body.wizard .settings-only { display: none !important; }
+body:not(.server-role) .server-only, body.server-role .client-only, body:not(.has-cloud) .cloud-only { display: none !important; }
+#alerts-panel[data-provider="resend"] .smtp-fields, #alerts-panel[data-provider="smtp"] .resend-fields { display: none !important; }
+#network-panel[data-source="cloud"] .local-only, #network-panel[data-source="local"] .cloud-fields { display: none !important; }
+.cloud-fields.fields { margin-top: 14px; }
+.key-row { display: flex; gap: 8px; align-items: center; }
+.key-row input { flex: 1; font-family: 'Cascadia Mono', Consolas, monospace !important; }
+body.wizard #btn-save, body.wizard #btn-cancel { display: none; }
+body.wizard.last #btn-save { display: inline-flex; } body.wizard.last #btn-next { display: none; }
+.version { margin-top: auto; font-size: .78rem; padding: 0 6px; }
+
+.content { overflow-y: auto; padding: 28px 34px 34px; }
+.panel { display: none; max-width: 1040px; }
+.panel.active { display: block; animation: rise .22s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } }
+
+.bar { display: flex; align-items: center; gap: 10px; padding: 14px 34px; border-top: 1px solid var(--line);
+       background: var(--card); backdrop-filter: blur(14px); }
+.bar .result { margin: 0 auto 0 0; }
+
+/* ---- kartice i polja ---- */
+fieldset.card { margin: 0 0 16px; padding: 18px 20px 20px; min-width: 0; }
+legend { float: left; width: 100%; padding: 0; margin: 0 0 14px; font-size: 1.05rem; font-weight: 700; }
+legend + * { clear: both; }
+.req { font-size: .72rem; font-weight: 600; color: var(--green); background: var(--green-soft); padding: 2px 8px;
+       border-radius: 99px; margin-left: 6px; vertical-align: 2px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid2 > .card { margin-bottom: 0; } .grid2 + * { margin-top: 16px; }
+.fields { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 16px; }
+.fields .w2 { grid-column: span 2; }
+label { display: flex; flex-direction: column; gap: 6px; font-size: .86rem; font-weight: 600; color: var(--muted); }
+label small { font-weight: 500; font-size: .76rem; }
+label.stack { margin-bottom: 12px; }
+textarea { resize: vertical; min-height: 64px; }
+input:not([type=radio]):not([type=checkbox]), select, textarea {
+  font: 600 .98rem 'Plus Jakarta Sans', 'Segoe UI', sans-serif; color: var(--text); background: var(--field);
+  border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; width: 100%; transition: border-color .15s, box-shadow .15s; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+.invalid input, input.invalid { border-color: var(--red) !important; }
+.err { color: var(--red); font-size: .78rem; font-weight: 600; margin: 0; min-height: 0; }
+.err:empty { display: none; }
+
+/* ---- mrežne kartice (izbor) ---- */
+.ifaces { display: flex; flex-direction: column; gap: 8px; }
+.iface { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 11px 14px;
+         border: 1px solid var(--line); border-radius: 14px; background: var(--field); cursor: pointer;
+         color: var(--text); font-weight: 500; transition: border-color .15s, background .15s; }
+.iface:hover { border-color: var(--muted); }
+.iface:has(input:checked) { border-color: var(--green); background: var(--green-soft); }
+.iface input { accent-color: var(--green); width: 17px; height: 17px; margin: 0; }
+.iface b { display: block; font-size: .96rem; } .iface small { color: var(--muted); font-size: .8rem; font-weight: 500; }
+.pill { font-size: .72rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+.pill.ok { color: var(--green); background: var(--green-soft); }
+.pill.off { color: var(--muted); background: var(--line); }
+.pill.warn { color: var(--amber); background: rgba(245,158,11,.14); }
+.hint { color: var(--green); font-weight: 700; font-size: .74rem; margin-left: 6px; }
+
+/* ---- izbori (razlučivost, tema) ---- */
+.forgot { margin-top: 14px; display: grid; gap: 10px; }
+.forgot summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
+.forgot[open] summary { color: var(--text); margin-bottom: 4px; }
+.forgot .btn { justify-self: start; }
+.choices { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.choices.two { grid-template-columns: 1fr 1fr; }
+.choices.three { grid-template-columns: repeat(3, 1fr); }
+.icon-preview .ix-ico { width: 1.6rem; height: 1.6rem; }
+.choice { position: relative; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--field);
+          cursor: pointer; color: var(--text); gap: 3px; transition: border-color .15s, background .15s; }
+.choice:hover { border-color: var(--muted); }
+.choice:has(input:checked) { border-color: var(--green); background: var(--green-soft); }
+.choice input { position: absolute; opacity: 0; }
+.choice b { font-size: .98rem; } .choice small { color: var(--muted); font-weight: 500; }
+.choice .res { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
+.swatch { height: 38px; border-radius: 10px; margin-bottom: 6px; border: 1px solid var(--line); }
+.swatch.dark { background: linear-gradient(135deg, #0B1120, #1A2540 60%, #4F86F7); }
+.swatch.light { background: linear-gradient(135deg, #EEF2F8, #FFFFFF 60%, #2F6BEA); }
+
+/* ---- prekidači ---- */
+.toggle { flex-direction: row; align-items: center; gap: 12px; color: var(--text); font-weight: 500; font-size: .94rem;
+          padding: 8px 0; cursor: pointer; }
+.toggle input { position: absolute; opacity: 0; }
+.toggle span { width: 40px; height: 23px; border-radius: 99px; background: var(--line); position: relative; flex: none;
+               transition: background .15s; }
+.toggle span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 17px; height: 17px; border-radius: 50%;
+                      background: var(--card-solid); box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .15s; }
+.toggle input:checked + span { background: var(--green); }
+.toggle input:checked + span::after { transform: translateX(17px); }
+.toggle input:focus-visible + span { box-shadow: 0 0 0 3px var(--green-soft); }
+
+/* ---- gumbi i poruke ---- */
+.btn { font: 600 .92rem 'Plus Jakarta Sans', 'Segoe UI', sans-serif; color: var(--text); background: var(--card-solid);
+       border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; cursor: pointer; display: inline-flex;
+       align-items: center; gap: 8px; transition: transform .1s, border-color .15s, background .15s; white-space: nowrap; }
+.btn:hover { border-color: var(--muted); } .btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.btn.primary { background: var(--green); border-color: var(--green); color: #0B1120; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { background: none; }
+.btn[disabled] { opacity: .55; cursor: progress; }
+.row-end { display: flex; justify-content: flex-end; gap: 10px; margin: 12px 0 16px; }
+.row-start { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.test { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+.result { margin: 0; font-size: .88rem; font-weight: 600; }
+.result.ok { color: var(--green); } .result.fail { color: var(--red); } .result.busy { color: var(--muted); }
+.status { margin: 4px 0 0; font-size: .88rem; color: var(--muted); }
+.status b { color: var(--text); }
+.note { margin-top: 16px; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--green-soft);
+        background: var(--green-soft); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.steps { padding-left: 20px; } .steps li { margin: 8px 0; color: var(--muted); } .steps b { color: var(--text); }
+
+/* ---- slike ---- */
+.images { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.image-card { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 14px;
+              background: var(--field); border: 1px solid var(--line); }
+.image-card .thumb { height: 120px; border-radius: 10px; background: var(--card-solid) center / cover no-repeat;
+                     border: 1px solid var(--line); }
+.image-card.drawing .thumb, .image-card.logo .thumb { background-size: contain; }
+.image-card.logo .thumb { background-color: #0F172A; }
+.image-card h3 { margin: 0; font-size: .98rem; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.image-card .ratio { font-size: .74rem; font-weight: 700; color: var(--green); background: var(--green-soft);
+                     padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+.image-card p { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.45; }
+.image-card .row-start { margin-top: 0; }
+
+/* ---- uređaj: polja samo za logger ili samo za inverter ---- */
+.device-choice { margin-bottom: 16px; }
+#device-card [data-show][hidden], #device-card [data-device-type][hidden] { display: none !important; }
+
+/* ---- tema: palete boja ---- */
+.icon-preview { display: flex; flex-wrap: wrap; gap: 8px; font-size: 1.45rem; margin-bottom: 8px; min-height: 2rem; }
+.choices.palettes { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.palette .swatch { display: block; height: 76px; border-radius: 12px; margin-bottom: 10px; border: 1px solid var(--line); overflow: hidden; }
+.palette .swatch svg { display: block; width: 100%; height: 100%; }
+.palette[hidden] { display: none !important; }
+
+/* ---- Solarni poslužitelj 3.0: prijava administratora i korisnici ---- */
+.lock-box.wide { width: min(640px, 92vw); }
+.lock-box label.stack { margin-top: 12px; }
+.lock-box .fields { margin-top: 14px; }
+.admin-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 14px; }
+.users-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.users-head p { margin: 0; max-width: 60ch; }
+.users { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.user-row { display: grid; grid-template-columns: minmax(180px, 1.4fr) auto minmax(150px, 1fr) auto; align-items: center; gap: 12px;
+            padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; }
+.user-row .who { display: flex; flex-direction: column; min-width: 0; }
+.user-row .who small { color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
+.user-row .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.user-row .acts { display: flex; gap: 6px; justify-content: flex-end; }
+.pill.bad { background: rgba(239, 68, 68, .16); color: #F87171; }
+.btn.danger { color: #F87171; }
+.user-dialog { width: min(620px, 92vw); border: 1px solid var(--line); border-radius: 18px; padding: 22px; color: var(--text); }
+.user-dialog::backdrop { background: rgba(2, 6, 23, .6); backdrop-filter: blur(3px); }
+.user-dialog h2 { margin: 0 0 12px; }
+@media (max-width: 760px) { .user-row { grid-template-columns: 1fr; } .user-row .acts { justify-content: flex-start; } }
+.user-row .pill:not(.ok):not(.off):not(.warn):not(.bad) { color: #93C5FD; background: rgba(59, 130, 246, .16); }
+.lock { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.lock[hidden], .lock-box[hidden] { display: none; }
+.lock-box { width: min(440px, 92vw); padding: 28px 30px; display: flex; flex-direction: column; gap: 6px; }
+.lock-box h1 { margin: 0 0 2px; font-size: 1.6rem; }
+.lock-box .row-end { margin-top: 10px; }
+.cloud-account:empty { display: none; }
+.cloud-account code { font-size: .74em; word-break: break-all; }
+[hidden].cloud-login, [hidden].cloud-logout { display: none !important; }
+
+/* ---- dvofaktorska prijava (3.1) ---- */
+.totp { margin-top: 12px; }
+.totp-setup { display: grid; grid-template-columns: 168px 1fr; gap: 14px; align-items: center; margin-bottom: 10px; }
+.totp-setup[hidden] { display: none; }
+.totp .qr { width: 168px; height: 168px; background: #fff; border-radius: 12px; padding: 6px; }
+.totp .qr svg { width: 100%; height: 100%; display: block; }
+.totp .secret { font-size: .9rem; letter-spacing: .04em; word-break: break-all; }
+.totp-code { font: 700 1.3rem 'Cascadia Mono', Consolas, monospace; letter-spacing: .2em; text-align: center; }
+.recovery { margin-top: 12px; padding: 14px; border: 1px solid var(--amber); border-radius: 12px; background: rgba(245,158,11,.08); }
+.recovery[hidden] { display: none; }
+.recovery .codes { font: 600 1rem 'Cascadia Mono', Consolas, monospace; columns: 2; margin: 10px 0; user-select: all; }
+.totp-admin { margin-top: 6px; }
+.totp-admin[hidden] { display: none; }
+
+/* ---- lokacija prognoze (3.1) ---- */
+.city-row { display: flex; gap: 10px; align-items: flex-end; }
+.city-row .stack { flex: 1; margin: 0; }
+.places { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.places:empty { display: none; }
+.place { text-align: left; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--field);
+         color: var(--text); cursor: pointer; font: inherit; }
+.place:hover { border-color: var(--green); }
+.city-now { margin: 12px 0 0; }
+
+/* ---- off-grid uređaji na COM/USB (3.2) ---- */
+#device-card:not([data-serial="1"]) .serial-field { display: none; }
+#device-card[data-serial="1"] .net-field { display: none; }
+
+/* ---- aktivacija računa (4.0) ---- */
+.newpw { margin-top: 12px; padding: 12px 14px; border: 1px solid var(--amber); border-radius: 12px; background: rgba(245,158,11,.08); }
+.newpw[hidden] { display: none; }
+.newpw p { margin: 0 0 6px; }
+
+/* ---- klizači u bojama teme (umjesto bijelih Windows klizača) ---- */
+html { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--text) 28%, transparent) transparent; }
+:root, [data-theme="dark"] { color-scheme: dark; }
+[data-theme="light"] { color-scheme: light; }
+@media (max-width: 520px) { .choices.three { grid-template-columns: 1fr; } }
+
+/* 5.1: izgled nadzorne ploče */
+.choices.four { grid-template-columns: repeat(4, 1fr); }
+.design-preview { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; margin-bottom: 8px;
+                  border: 1px solid var(--line, rgba(255,255,255,.1)); }
+.design-photo { margin-top: 12px; }
+.design-photo.dim { opacity: .55; }
+@media (max-width: 900px) { .choices.four { grid-template-columns: repeat(2, 1fr); } }

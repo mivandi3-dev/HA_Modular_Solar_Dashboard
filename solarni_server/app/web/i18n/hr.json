@@ -1,0 +1,76 @@
+{
+ "meta": {
+  "locale": "hr-HR",
+  "decimal": ",",
+  "group": ".",
+  "weekdays": [
+   "ponedjeljak",
+   "utorak",
+   "srijeda",
+   "četvrtak",
+   "petak",
+   "subota",
+   "nedjelja"
+  ],
+  "weekdays_short": [
+   "pon",
+   "uto",
+   "sri",
+   "čet",
+   "pet",
+   "sub",
+   "ned"
+  ],
+  "months": [
+   "siječanj",
+   "veljača",
+   "ožujak",
+   "travanj",
+   "svibanj",
+   "lipanj",
+   "srpanj",
+   "kolovoz",
+   "rujan",
+   "listopad",
+   "studeni",
+   "prosinac"
+  ],
+  "months_gen": [
+   "siječnja",
+   "veljače",
+   "ožujka",
+   "travnja",
+   "svibnja",
+   "lipnja",
+   "srpnja",
+   "kolovoza",
+   "rujna",
+   "listopada",
+   "studenoga",
+   "prosinca"
+  ],
+  "months_short": [
+   "sij",
+   "velj",
+   "ožu",
+   "tra",
+   "svi",
+   "lip",
+   "srp",
+   "kol",
+   "ruj",
+   "lis",
+   "stu",
+   "pro"
+  ],
+  "date_long": "{d}. {month_gen} {y}. · {weekday}",
+  "date": "{d:02}.{m:02}.{y}.",
+  "day_month": "{d:02}.{m:02}.",
+  "date_text": "{d}. {month_gen} {y}.",
+  "month_year": "{month} {y}.",
+  "chart_day": "{wd}<br>{d}.",
+  "chart_month": "{mon}<br>{yy:02}.",
+  "name": "Hrvatski"
+ },
+ "strings": {}
+}

@@ -1,0 +1,13 @@
+/* Postavke u Home Assistantu: skriva samo ono što u pregledniku nema smisla (Windows zaslon, pokretanje pri prijavi,
+   otvaranje mapa na disku). Sve ostalo izgleda kao u Windows aplikaciji. */
+fieldset.client-only:has(#scales),
+label.stack:has(#monitor),
+label.toggle:has([data-field="start_fullscreen"]),
+label.toggle:has([data-field="keep_awake"]),
+label.toggle:has(#autostart),
+[data-action="open-data"],
+[data-action="open-logs"] { display: none !important; }
+/* kartica prema uređaju smije biti „Automatski” (Linux bira rutu) – nije obavezna */
+#network-panel legend .req { display: none; }
+/* Home Assistant entiteti: nema IP adrese, porta ni Modbus mjerača */
+#device-card[data-device="homeassistant"] .net-field { display: none !important; }

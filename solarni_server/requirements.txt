@@ -1,0 +1,4 @@
+aiohttp>=3.9,<4
+pyserial>=3.5,<4
+pillow>=10,<13
+paho-mqtt>=2,<3

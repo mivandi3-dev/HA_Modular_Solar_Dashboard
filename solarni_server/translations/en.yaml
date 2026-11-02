@@ -1,0 +1,17 @@
+configuration:
+  api_token:
+    name: API access key
+    description: Empty = the server creates one and writes it to /share/solarni/api_token (the dashboard reads it automatically).
+  publish_sensors:
+    name: Sensors in Home Assistant
+    description: Power, energy today/total, grid, battery – for the Energy dashboard and automations.
+  ha_notify:
+    name: Notifications in Home Assistant
+    description: persistent_notification (HA notification) or notify.<service> (e.g. notify.mobile_app_phone – push to phone); empty = off. Sent in addition to email.
+  compact_after_days:
+    name: Compact history older than (days)
+    description: Older readings are reduced to 5-minute averages (daily peak is kept) – smaller database and backups. 0 = never.
+  log_level:
+    name: Log level
+network:
+  8700/tcp: Solar server API (dashboard)

@@ -1,0 +1,38 @@
+name: Solarni poslužitelj
+version: "5.1.1-ha1"
+slug: solarni_server
+url: https://github.com/mivandi3-dev/HA_Modular_Solar_Dashboard
+description: Bilježi podatke solarne elektrane (Huawei, SunSpec, Fronius, Sungrow, GoodWe, Deye, Victron, off-grid…) i daje ih dashboardu
+arch: [aarch64, amd64, armv7]
+init: false
+startup: services
+boot: auto
+host_network: true        # Modbus/HTTP prema uređajima u lokalnoj mreži, izbor mrežne kartice
+homeassistant_api: true   # senzori, obavijesti i entiteti Home Assistanta
+services:
+  - mqtt:want             # Mosquitto add-on → elektrana kao uređaj (MQTT discovery)
+watchdog: "http://[HOST]:[PORT:8700]/api/v1/ping"   # 503 kad poller stoji → HA ponovno pokrene add-on
+ports:
+  8700/tcp: 8700          # API za dashboard (host mreža – broj porta mijenjate ovdje)
+ports_description:
+  8700/tcp: API Solarnog poslužitelja (dashboard)
+uart: true                # off-grid: USB-serijski kabel, RS232, RS485
+usb: true
+udev: true
+map:
+  - type: share           # /share/solarni/api_token – dashboard ga čita sam
+    read_only: false
+backup_exclude:
+  - "backups/*"
+options:
+  api_token: ""
+  publish_sensors: true
+  ha_notify: persistent_notification
+  compact_after_days: 400
+  log_level: info
+schema:
+  api_token: password?
+  publish_sensors: bool
+  ha_notify: str?
+  compact_after_days: int(0,3650)
+  log_level: list(debug|info|warning|error)

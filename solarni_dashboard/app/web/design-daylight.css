@@ -1,0 +1,30 @@
+/* 5.1 – izgled „Dnevno svjetlo” (Postavke → Prikaz → Izgled nadzorne ploče): svijetla tema za predvorja i urede s puno
+   svjetla. dashboard.js tada uvijek učitava svijetlu temu (dashboard-light.css); ovdje su samo dodatci: bijele kartice s mekom
+   sjenom, tamni veliki brojevi, prirodni zeleni naglasci i fotografija elektrane u punim bojama. */
+html[data-design="daylight"] {
+  --card: #FFFFFF; --card-solid: #FFFFFF; --border: rgba(15, 23, 42, .06); --line: rgba(15, 23, 42, .08);
+  --shadow: 0 10px 30px rgba(15, 23, 42, .07); --text: #0F172A; --muted: #64748B; --greet: #334155; --accent: #16A34A;
+}
+html[data-design="daylight"] .stApp { background: linear-gradient(180deg, #EEF3F9 0%, #F7F9FC 100%) !important; }
+html[data-design="daylight"] .glass, html[data-design="daylight"] .card, html[data-design="daylight"] [class*="st-key-card-"] {
+  background: #FFFFFF; border-radius: 22px; backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+html[data-design="daylight"] .hero .glass { background: rgba(255, 255, 255, .88); backdrop-filter: blur(12px); box-shadow: 0 12px 30px rgba(15, 23, 42, .12); }
+html[data-design="daylight"] .hero h1 { font-size: 2.5rem; font-weight: 700; }
+html[data-design="daylight"] .hero h1 .hl { color: #16A34A !important; }
+html[data-design="daylight"] .hero-bg { box-shadow: 0 20px 50px rgba(15, 23, 42, .12); }
+html[data-design="daylight"] .kpi .value { font-size: 2.2rem; font-weight: 800; }
+html[data-design="daylight"] .headline .big { font-size: 2.2rem; font-weight: 800; }
+html[data-design="daylight"] .card-title { font-weight: 700; }
+html[data-design="daylight"] .item .v { font-size: 1.35rem; font-weight: 800; }
+html[data-design="daylight"] .node { background: #F8FAFC; border-color: #E2E8F0; box-shadow: 0 6px 16px rgba(15, 23, 42, .06); }
+
+/* sloj s podacima preko crteža (tok energije) ostaje proziran – inače prekrije ili zamuti crtež */
+html[data-design="daylight"] .card.overlay { background: none !important; border-color: transparent; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+/* naslov preko fotografije: bijeli prijelaz da tekst ostane čitljiv (posebno na uskom zaslonu) */
+html[data-design="daylight"] .hero-bg::after { content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .9) 0%, rgba(255, 255, 255, .55) 40%, rgba(255, 255, 255, 0) 70%); }
+@media (max-width: 900px) {
+  html[data-design="daylight"] .hero-bg::after { background: linear-gradient(180deg, rgba(255, 255, 255, .92) 0%, rgba(255, 255, 255, .6) 45%, rgba(255, 255, 255, .25) 100%); }
+}

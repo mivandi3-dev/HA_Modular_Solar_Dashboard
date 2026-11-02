@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="hr" data-theme="dark">
+<head>
+<meta charset="utf-8">
+  <!-- 5.0.1 (audit W-06): samo vlastite skripte, bez vanjskih veza -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://data.solari https://app.solari data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solarni monitor – postavke</title>
+<link rel="stylesheet" href="settings.css">
+<link rel="stylesheet" href="ha-settings.css">
+</head>
+<body>
+
+<!-- Zaključano PIN-om -->
+<main id="lock" class="lock" hidden>
+  <form class="glass lock-box" id="lock-form">
+    <h1>Postavke su zaključane</h1>
+    <p class="muted">Upišite PIN za pristup postavkama.</p>
+    <input id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" aria-label="PIN">
+    <p class="result" id="lock-result" role="status"></p>
+    <div class="row-end">
+      <button type="button" class="btn" data-action="close">Odustani</button>
+      <button type="submit" class="btn primary">Otključaj</button>
+    </div>
+  </form>
+
+  <!-- Solarni poslužitelj: prijava administratora -->
+  <form class="glass lock-box" id="admin-login" hidden>
+    <h1>Solarni poslužitelj</h1>
+    <p class="muted">Prijavite se kao administrator.</p>
+    <label class="stack">E-pošta<input id="login-email" type="email" autocomplete="username" spellcheck="false"></label>
+    <label class="stack">Lozinka<input id="login-password" type="password" autocomplete="current-password"></label>
+    <div class="newpw" id="login-newpw" hidden>
+      <p class="small"><b>Aktivacija računa:</b> prijavili ste se jednokratnim aktivacijskim kodom. Upišite svoju lozinku – najmanje 10 znakova i barem tri vrste
+        znakova (mala i velika slova, brojke, ostali znakovi) ili barem 16 znakova.</p>
+      <label class="stack">Nova lozinka<input class="np1" type="password" autocomplete="new-password"></label>
+      <label class="stack">Ponovite novu lozinku<input class="np2" type="password" autocomplete="new-password"></label>
+    </div>
+    <div class="totp" id="login-totp" hidden>
+      <div class="totp-setup">
+        <div class="qr" aria-label="QR kod za aplikaciju autentifikator"></div>
+        <div><p class="small">Skenirajte QR kod aplikacijom autentifikatorom (Google Authenticator, Microsoft Authenticator, Authy…)
+          ili u njoj ručno upišite ključ:</p><code class="secret"></code></div>
+      </div>
+      <label class="stack">Kod iz aplikacije autentifikatora (ili kod za oporavak)<input class="totp-code" inputmode="numeric" autocomplete="one-time-code" maxlength="12" spellcheck="false"></label>
+    </div>
+    <div class="recovery" id="login-totp-recovery" hidden>
+      <p><b>Dvofaktorska prijava je uključena.</b> Spremite ove jednokratne kodove za oporavak na sigurno mjesto – vrijede
+        ako izgubite mobitel. Prikazuju se samo sada.</p>
+      <pre class="codes"></pre>
+      <button type="button" class="btn primary" data-action="recovery-done">Spremio sam kodove – nastavi</button>
+    </div>
+    <p class="result" id="login-result" role="status"></p>
+    <details class="forgot" data-forgot="admin">
+      <summary>Zaboravljena lozinka?</summary>
+      <p class="small">Upišite e-poštu računa i zatražite kod. Kod stiže e-poštom, vrijedi 30 minuta i može se iskoristiti jednom.
+        Dok ga ne iskoristite, vrijedi stara lozinka.</p>
+      <button type="button" class="btn" data-action="forgot-send">Pošalji kod e-poštom</button>
+      <label class="stack">Kod iz e-pošte<input class="fp-code" autocomplete="one-time-code" spellcheck="false" maxlength="9" placeholder="XXXX-XXXX"></label>
+      <label class="stack">Nova lozinka<input class="fp-np1" type="password" autocomplete="new-password"></label>
+      <label class="stack">Ponovite novu lozinku<input class="fp-np2" type="password" autocomplete="new-password"></label>
+      <button type="button" class="btn primary" data-action="forgot-reset">Postavi novu lozinku</button>
+      <p class="result fp-result" role="status"></p>
+    </details>
+    <div class="row-end">
+      <button type="button" class="btn" data-action="close">Odustani</button>
+      <button type="submit" class="btn primary" id="login-submit">Prijava</button>
+    </div>
+  </form>
+
+  <!-- Solarni poslužitelj: prvo pokretanje – izrada administratora -->
+  <form class="glass lock-box wide" id="admin-setup" hidden>
+    <h1>Izrada administratora</h1>
+    <p class="muted">Solarni poslužitelj od verzije 3.0 umjesto API ključa koristi korisničke račune. Izradite prvi račun –
+      administrator dodaje ostale korisnike i jedini otvara ove postavke.</p>
+    <div class="fields">
+      <label>Ime<input data-user="first_name" autocomplete="given-name"><span class="err" data-user-error="first_name"></span></label>
+      <label>Prezime<input data-user="last_name" autocomplete="family-name"><span class="err" data-user-error="last_name"></span></label>
+      <label class="w2">E-pošta (korisničko ime)<input data-user="email" type="email" autocomplete="username" spellcheck="false"><span class="err" data-user-error="email"></span></label>
+      <label>Lozinka<input data-user="password" type="password" autocomplete="new-password"><span class="err" data-user-error="password"></span></label>
+      <label>Ponovite lozinku<input data-user="password2" type="password" autocomplete="new-password"><span class="err" data-user-error="password2"></span></label>
+    </div>
+    <p class="muted small">Najmanje 10 znakova i barem tri vrste znakova (mala i velika slova, brojke, ostali znakovi) ili
+      barem 16 znakova. Lozinka se ne sprema – poslužitelj čuva samo njezin sažetak (PBKDF2, 600 000 ponavljanja), a ime,
+      prezime i e-pošta spremaju se šifrirani (AES-256).</p>
+    <p class="result" id="setup-result" role="status"></p>
+    <div class="row-end">
+      <button type="button" class="btn" data-action="close">Odustani</button>
+      <button type="submit" class="btn primary" id="setup-submit">Izradi administratora</button>
+    </div>
+  </form>
+</main>
+
+<div id="app" class="layout" hidden>
+  <aside class="side">
+    <div class="brand"><span class="sun" aria-hidden="true"></span><div><b>Solarni monitor</b><small id="mode-label">Postavke</small></div></div>
+    <nav id="nav" aria-label="Odjeljci postavki">
+      <button data-panel="welcome" class="wizard-only"><i>1</i>Dobrodošli</button>
+      <button data-panel="network"><i>2</i>Mreža</button>
+      <button data-panel="plant"><i>3</i>Elektrana</button>
+      <button data-panel="display"><i>4</i>Prikaz</button>
+      <button data-panel="alerts" class="settings-only"><i>·</i>Obavijesti</button>
+      <button data-panel="reports" class="settings-only"><i>·</i>Izvještaji</button>
+      <button data-panel="server" class="server-only"><i>5</i>Poslužitelj</button>
+      <button data-panel="system" class="client-only"><i>5</i>Sustav</button>
+    </nav>
+    <div class="version muted" id="version"></div>
+  </aside>
+
+  <main class="content">
+    <!-- ---------------------------------------------------------- dobrodošli (samo čarobnjak) -->
+    <section data-panel="welcome" class="panel">
+      <h1>Dobrodošli</h1>
+      <label class="stack lang-pick">Jezik · Language<select data-field="language" class="language-select"></select></label>
+      <p class="lead" data-i18n>Prije prvog prikaza aplikacija treba znati <b>kojom mrežom ide do SmartLoggera</b>, a kojom
+        <b>na internet</b> (vremenska prognoza). Sve što ovdje postavite može se kasnije promijeniti tipkom <kbd>F2</kbd>
+        ili gumbom <i>Postavke</i> koji se pojavi kad pomaknete miš.</p>
+      <ol class="steps">
+        <li data-i18n><b>Mreža</b> – mrežne kartice, IP adresa loggera i provjera veze</li>
+        <li data-i18n><b>Elektrana</b> – naziv, instalirana snaga, lokacija prognoze</li>
+        <li data-i18n><b>Prikaz</b> – razlučivost (Full HD / 2K / 4K), zaslon, cijeli zaslon</li>
+        <li data-i18n><b>Sustav</b> – pokretanje s Windowsima, uvoz postojeće povijesti, PIN</li>
+      </ol>
+      <div class="note" id="legacy-note" hidden data-i18n>Pronađene su postavke postojeće instalacije u <code>C:\solari</code> –
+        polja su već popunjena njima.</div>
+    </section>
+
+    <!-- ---------------------------------------------------------- mreža -->
+    <section data-panel="network" class="panel" id="network-panel" data-source="local">
+      <h1>Mreža</h1>
+      <fieldset class="glass card cloud-only">
+        <legend>Izvor podataka</legend>
+        <div class="choices two" role="radiogroup" aria-label="Izvor podataka">
+          <label class="choice"><input type="radio" name="data_source" value="local" checked><b>Logger u lokalnoj mreži</b><small>ovo računalo čita SmartLogger ili inverter</small></label>
+          <label class="choice"><input type="radio" name="data_source" value="cloud"><b>Solarni poslužitelj</b><small>preko Cloudflare tunela ili lokalne mreže</small></label>
+        </div>
+        <div class="fields cloud-fields">
+          <label class="w2">Adresa poslužitelja<input data-field="cloud_url" placeholder="https://solar.tvrtka.hr"><small>Cloudflare tunel (https://…) ili u lokalnoj mreži https://192.168.1.20:8700</small><span class="err" data-error="cloud_url"></span></label>
+          <div class="w2 cloud-account" id="cloud-account"></div>
+          <label class="w2 cloud-login">E-pošta<input id="cloud_email" type="email" autocomplete="username" spellcheck="false"></label>
+          <label class="w2 cloud-login">Kod za uparivanje<input id="cloud_pairing" autocomplete="off" spellcheck="false" placeholder="XXXXX-XXXXX-XXXXX-XXXXX"><small>s prozora Solarnog poslužitelja (Postavke → Poslužitelj); samo pri prvoj prijavi na poslužitelj u lokalnoj mreži</small></label>
+          <label class="w2 cloud-login">Lozinka ili aktivacijski kod<input id="cloud_password" type="password" autocomplete="current-password"><small>ne sprema se – aplikacija čuva samo šifriranu oznaku prijave</small></label>
+          <div class="w4"><div class="newpw" id="cloud-newpw" hidden>
+      <p class="small"><b>Aktivacija računa:</b> prijavili ste se jednokratnim aktivacijskim kodom. Upišite svoju lozinku – najmanje 10 znakova i barem tri vrste
+        znakova (mala i velika slova, brojke, ostali znakovi) ili barem 16 znakova.</p>
+      <label class="stack">Nova lozinka<input class="np1" type="password" autocomplete="new-password"></label>
+      <label class="stack">Ponovite novu lozinku<input class="np2" type="password" autocomplete="new-password"></label>
+    </div></div>
+          <span class="err w4" data-error="cloud_login"></span>
+          <div class="w4"><div class="totp" id="cloud-totp" hidden>
+      <div class="totp-setup">
+        <div class="qr" aria-label="QR kod za aplikaciju autentifikator"></div>
+        <div><p class="small">Skenirajte QR kod aplikacijom autentifikatorom (Google Authenticator, Microsoft Authenticator, Authy…)
+          ili u njoj ručno upišite ključ:</p><code class="secret"></code></div>
+      </div>
+      <label class="stack">Kod iz aplikacije autentifikatora (ili kod za oporavak)<input class="totp-code" inputmode="numeric" autocomplete="one-time-code" maxlength="12" spellcheck="false"></label>
+    </div>
+    <div class="recovery" id="cloud-totp-recovery" hidden>
+      <p><b>Dvofaktorska prijava je uključena.</b> Spremite ove jednokratne kodove za oporavak na sigurno mjesto – vrijede
+        ako izgubite mobitel. Prikazuju se samo sada.</p>
+      <pre class="codes"></pre>
+      <button type="button" class="btn primary" data-action="recovery-done">Spremio sam kodove – nastavi</button>
+    </div></div>
+        </div>
+        <p class="muted small cloud-fields">Podaci, naziv elektrane, naslov, logotip i slike dolaze s poslužitelja; raspored widgeta, tema i jezik su na svakom računalu svoji.</p>
+        <div class="test cloud-fields">
+          <button class="btn primary cloud-login" data-action="cloud-login">Prijava</button>
+          <button class="btn ghost cloud-logout" data-action="cloud-logout">Odjava</button>
+          <p class="result" id="cloud-result" role="status"></p>
+        </div>
+        <div class="cloud-fields cloud-login">
+    <details class="forgot" data-forgot="cloud">
+      <summary>Zaboravljena lozinka?</summary>
+      <p class="small">Upišite e-poštu računa (i adresu poslužitelja te, pri prvoj prijavi u lokalnoj mreži, kod za uparivanje) i zatražite kod. Kod stiže e-poštom, vrijedi 30 minuta i može se iskoristiti jednom.
+        Dok ga ne iskoristite, vrijedi stara lozinka.</p>
+      <button type="button" class="btn" data-action="forgot-send">Pošalji kod e-poštom</button>
+      <label class="stack">Kod iz e-pošte<input class="fp-code" autocomplete="one-time-code" spellcheck="false" maxlength="9" placeholder="XXXX-XXXX"></label>
+      <label class="stack">Nova lozinka<input class="fp-np1" type="password" autocomplete="new-password"></label>
+      <label class="stack">Ponovite novu lozinku<input class="fp-np2" type="password" autocomplete="new-password"></label>
+      <button type="button" class="btn primary" data-action="forgot-reset">Postavi novu lozinku</button>
+      <p class="result fp-result" role="status"></p>
+    </details>
+        </div>
+      </fieldset>
+      <p class="lead local-only">Računalo može imati dvije mreže: jednu prema SmartLoggeru (lokalna mreža elektrane) i drugu
+        prema internetu. Promet prema loggeru i prema internetu vezuje se na izabranu karticu.</p>
+
+      <div class="grid2 local-only">
+        <fieldset class="glass card">
+          <legend>Mreža prema loggeru <span class="req">obavezno</span></legend>
+          <div class="ifaces" id="logger-ifaces" role="radiogroup" aria-label="Mrežna kartica prema loggeru"></div>
+          <p class="err" data-error="logger_interface"></p>
+        </fieldset>
+        <fieldset class="glass card">
+          <legend>Mreža prema internetu</legend>
+          <div class="ifaces" id="internet-ifaces" role="radiogroup" aria-label="Mrežna kartica prema internetu"></div>
+          <p class="err" data-error="internet_interface"></p>
+        </fieldset>
+      </div>
+      <div class="row-end local-only"><button class="btn ghost" data-action="refresh-ifaces">↻ Osvježi popis kartica</button></div>
+
+      <fieldset class="glass card local-only" id="device-card">
+        <legend>Uređaj</legend>
+        <div class="choices two device-choice" role="radiogroup" aria-label="Uređaj">
+          <label class="choice"><input type="radio" name="device_type" value="logger"><b>Huawei SmartLogger</b><small>jedan uređaj za cijelu elektranu</small></label>
+          <label class="choice"><input type="radio" name="device_type" value="inverter"><b>Huawei SUN2000 inverter</b><small>izravno, bez loggera (SDongle ili WLAN invertera)</small></label>
+          <label class="choice" data-device-type="sunspec" hidden><input type="radio" name="device_type" value="sunspec"><b>SunSpec Modbus</b><small>SMA, Fronius, SolarEdge, Kostal, ABB/FIMER, Delta…</small></label>
+          <label class="choice" data-device-type="fronius" hidden><input type="radio" name="device_type" value="fronius"><b>Fronius Solar API</b><small>Fronius Datamanager ili GEN24 preko lokalne mreže (HTTP)</small></label>
+          <label class="choice" data-device-type="vendor" hidden><input type="radio" name="device_type" value="vendor"><b>Ostali proizvođači</b><small>Sungrow, GoodWe, Deye / Sunsynk, Solis, Fox ESS, Growatt, Victron Energy GX; off-grid: Growatt SPF, EPEver, SRNE</small></label>
+          <label class="choice" data-device-type="voltronic" hidden><input type="radio" name="device_type" value="voltronic"><b>Off-grid izmjenjivač (Voltronic)</b><small>Axpert, MPP Solar, EASUN, PowMr, Mecer, Must PV18… – USB ili RS232</small></label>
+          <label class="choice" data-device-type="vedirect" hidden><input type="radio" name="device_type" value="vedirect"><b>Victron VE.Direct</b><small>SmartSolar / BlueSolar MPPT, Phoenix 12/24/48 V, SmartShunt, BMV – USB kabel, bez GX-a</small></label>
+          <label class="choice" data-device-type="homeassistant" hidden><input type="radio" name="device_type" value="homeassistant"><b>Home Assistant entiteti</b><small>senzori koje Home Assistant već čita (Huawei Solar, SolarEdge, Fronius, Enphase…) – bez druge veze s uređajem</small></label>
+        </div>
+        <div class="fields">
+          <label class="w2" data-show="vendor">Proizvođač i model<select data-field="device_profile" id="device-profile"></select><span class="err" data-error="device_profile"></span></label>
+          <label class="w2 net-field">IP adresa uređaja<input data-field="modbus_host" placeholder="192.168.5.199"><span class="err" data-error="modbus_host"></span></label>
+          <label class="net-field">Port<input data-field="modbus_port" inputmode="numeric"><span class="err" data-error="modbus_port"></span></label>
+          <label class="w2 serial-field">Serijski port<input data-field="serial_port" placeholder="COM3" autocomplete="off" spellcheck="false"><small id="serial-ports"></small><span class="err" data-error="serial_port"></span></label>
+          <label class="serial-field">Brzina<select data-field="serial_baud"><option value="0">zadana</option><option value="2400">2400</option><option value="9600">9600</option><option value="19200">19200</option><option value="115200">115200</option></select><span class="err" data-error="serial_baud"></span></label>
+          <label data-show="logger">Modbus adresa loggera<input data-field="modbus_unit_id" inputmode="numeric"><small>0 = cijela elektrana</small><span class="err" data-error="modbus_unit_id"></span></label>
+          <label data-show="vendor" id="logger-serial-field">Serijski broj Wi-Fi loggera<input data-field="logger_serial" inputmode="numeric" placeholder="2712345678"><small>samo uz port 8899 (Solarman logger) – s naljepnice na loggeru</small><span class="err" data-error="logger_serial"></span></label>
+          <label data-show="inverter sunspec vendor">Modbus adrese invertera<input data-field="inverter_units" placeholder="1"><small data-show="inverter vendor">npr. 1 ili 1,2,3 – snage se zbrajaju</small><small data-show="sunspec">SMA 126 · Fronius 1 · SolarEdge 1 · Kostal 71; više invertera: 1,2,3</small><span class="err" data-error="inverter_units"></span></label>
+          <label class="net-field">Adresa mjerača potrošnje<input data-field="meter_unit_id" inputmode="numeric"><small data-show="logger">0 = bez mjerača</small><small data-show="inverter">inverter s mjeračem, 0 = bez mjerača</small><small data-show="sunspec">Fronius 240 (GEN24 200), SolarEdge ista adresa kao inverter; 0 = bez mjerača</small><small data-show="fronius">1 = Fronius Smart Meter, 0 = bez mjerača</small><small data-show="vendor">1 = mjerač spojen na inverter, 0 = bez mjerača</small><span class="err" data-error="meter_unit_id"></span></label>
+          <label class="w2" data-show="homeassistant">Snaga elektrane (entitet)<input data-field="ha_power_entity" placeholder="sensor.inverter_active_power" autocomplete="off" spellcheck="false"><small>W ili kW, obavezno</small><span class="err" data-error="ha_power_entity"></span></label>
+          <label class="w2" data-show="homeassistant">Proizvodnja danas (entitet)<input data-field="ha_today_entity" placeholder="sensor.inverter_daily_yield" autocomplete="off" spellcheck="false"><small>Wh ili kWh; prazno = računa se iz ukupne</small><span class="err" data-error="ha_today_entity"></span></label>
+          <label class="w2" data-show="homeassistant">Ukupna proizvodnja (entitet)<input data-field="ha_total_entity" placeholder="sensor.inverter_total_yield" autocomplete="off" spellcheck="false"><small>kWh ili MWh; prazno = računa se iz snage</small><span class="err" data-error="ha_total_entity"></span></label>
+          <label class="w2" data-show="homeassistant">Snaga mreže (entitet)<input data-field="ha_grid_entity" placeholder="sensor.power_meter_active_power" autocomplete="off" spellcheck="false"><small>pozitivno = uzimanje iz mreže (inače uključite „Obrni predznak”); prazno = bez mjerača</small><span class="err" data-error="ha_grid_entity"></span></label>
+          <label class="w2" data-show="homeassistant">Napunjenost baterije (entitet)<input data-field="ha_battery_soc_entity" placeholder="sensor.battery_state_of_capacity" autocomplete="off" spellcheck="false"><small>%; prazno = bez baterije</small><span class="err" data-error="ha_battery_soc_entity"></span></label>
+          <label class="w2" data-show="homeassistant">Snaga baterije (entitet)<input data-field="ha_battery_power_entity" placeholder="sensor.battery_charge_discharge_power" autocomplete="off" spellcheck="false"><small>pozitivno = punjenje</small><span class="err" data-error="ha_battery_power_entity"></span></label>
+          <label>Očitanje svakih (s)<input data-field="poll_interval_s" inputmode="numeric"><span class="err" data-error="poll_interval_s"></span></label>
+        </div>
+        <label class="toggle" data-show="sunspec"><input type="checkbox" data-field="meter_export_positive"><span></span>Pozitivna snaga mjerača znači predaju u mrežu</label>
+        <label class="toggle" data-show="vendor homeassistant"><input type="checkbox" data-field="meter_invert"><span></span>Obrni predznak mjerača</label>
+        <p class="muted small" data-show="vendor" id="vendor-help"></p>
+        <p class="muted small" data-show="sunspec">Proizvođači se razlikuju – ako tok energije pokazuje predaju kad elektrana uzima iz mreže, isključite ovu opciju.</p>
+        <p class="muted small" data-show="sunspec" data-i18n>Na uređaju uključite <b>Modbus TCP</b> sa <b>SunSpec</b> registrima. SMA: port <b>502</b>, adresa <b>126</b>.
+          Fronius Datamanager / GEN24: port <b>502</b>, adresa <b>1</b>. SolarEdge (SetApp): port <b>1502</b>, adresa <b>1</b>. Kostal: port <b>1502</b>, adresa <b>71</b>.</p>
+        <p class="muted small" data-show="fronius" data-i18n>IP adresa Fronius invertera ili Datamanagera i port <b>80</b>. Na Datamanageru je Solar API uključen tvornički,
+          a na GEN24 ga uključite u web sučelju invertera (<b>Communication → Solar API</b>). Dnevnu energiju GEN24 ne daje, pa je računa Solarni monitor.</p>
+        <p class="muted small" data-show="voltronic" data-i18n>Spojite izmjenjivač USB kabelom (upišite <b>USB</b>) ili RS232 kabelom preko USB-serijskog
+          pretvarača (upišite COM port, brzina <b>2400</b>). Energiju Voltronic ne daje – Solarni monitor je računa iz snage PV-a.</p>
+        <p class="muted small" data-show="vedirect" data-i18n>Victron VE.Direct–USB kabel na svaki uređaj (MPPT punjač, Phoenix izmjenjivač, SmartShunt/BMV);
+          više uređaja: COM portovi odvojeni zarezom, npr. <b>COM3, COM4</b>. Vrijednosti se zbrajaju. S GX uređajem (Cerbo) izaberite
+          <b>Ostali proizvođači → Victron Energy GX</b>.</p>
+        <p class="muted small" data-show="logger" data-i18n>Na SmartLoggeru (Settings → Communication Configuration → Modbus TCP) mora biti
+          <b>Enable (Limited)</b> s IP adresom ovog računala na kartici prema loggeru.</p>
+        <p class="muted small" data-show="inverter" data-i18n>Na inverteru (aplikacija FusionSolar → Postavke → Postavke komunikacije → Modbus TCP)
+          uključite <b>Omogući (neograničeno)</b>. Preko SDonglea: IP adresa SDonglea, port <b>502</b>, adrese invertera <b>1</b>, 2, 3…
+          Izravno na WLAN mrežu invertera: <b>192.168.200.1</b>, port <b>6607</b>, adresa <b>0</b>.</p>
+        <p class="muted small" data-show="homeassistant" data-i18n>Solarni monitor čita stanja entiteta preko Home Assistant API-ja – uređaj
+          ostaje spojen samo na integraciju Home Assistanta (npr. SmartLogger dopušta ograničen broj Modbus veza). Nazive entiteta
+          nađete u <b>Postavke → Uređaji i usluge → Entiteti</b>.</p>
+        <div class="test">
+          <button class="btn" data-action="test-logger">Provjeri vezu s uređajem</button>
+          <p class="result" id="logger-result" role="status"></p>
+        </div>
+        <div class="test">
+          <button class="btn" data-action="test-internet">Provjeri internet (prognoza)</button>
+          <p class="result" id="internet-result" role="status"></p>
+        </div>
+      </fieldset>
+    </section>
+
+    <!-- ---------------------------------------------------------- elektrana -->
+    <section data-panel="plant" class="panel">
+      <h1>Elektrana</h1>
+      <fieldset class="glass card">
+        <legend>Podaci o elektrani</legend>
+        <div class="fields">
+          <label class="w2">Naziv<input data-field="plant_name"><span class="err" data-error="plant_name"></span></label>
+          <label class="w2">Lokacija (tekst na prikazu)<input data-field="location"><span class="err" data-error="location"></span></label>
+          <label>Instalirana snaga (kWp)<input data-field="peak_power_kwp" inputmode="decimal"><span class="err" data-error="peak_power_kwp"></span></label>
+          <label>Skala brzinomjera (kW)<input data-field="speedo_max_kw" inputmode="numeric"><span class="err" data-error="speedo_max_kw"></span></label>
+          <label>Puštanje u rad<input data-field="commissioned" placeholder="11.2023."><small>prikazuje se kao „od puštanja u rad …”</small><span class="err" data-error="commissioned"></span></label>
+          <label>CO₂ (kg po kWh)<input data-field="co2_factor" inputmode="decimal"><small>HR miks ≈ 0,15–0,25 · EU ≈ 0,40</small><span class="err" data-error="co2_factor"></span></label>
+        </div>
+      </fieldset>
+      <fieldset class="glass card">
+        <legend>Naslov u zaglavlju</legend>
+        <div class="fields">
+          <label class="w2">Prvi red (naslov)<input data-field="headline" maxlength="60"><span class="err" data-error="headline"></span></label>
+          <label class="w2">Logotip<button type="button" class="btn" data-action="goto-images">Promijeni logotip…</button>
+            <small>Prikaz → Slike (PNG s prozirnom pozadinom)</small></label>
+          <label class="w2">Drugi red kad elektrana proizvodi<input data-field="headline_running" maxlength="60"><span class="err" data-error="headline_running"></span></label>
+          <label class="w2">Drugi red kad elektrana miruje<input data-field="headline_idle" maxlength="60"><span class="err" data-error="headline_idle"></span></label>
+        </div>
+        <p class="muted small" data-i18n>Dio teksta u zvjezdicama prikazuje se u boji, npr. <code>proizvodi *čistu energiju*</code>.
+          Kad logger nije dostupan, naslov je uvijek „Podaci s elektrane trenutno nisu dostupni”.</p>
+        <div class="headline-preview" id="headline-preview" aria-label="Pregled naslova"></div>
+      </fieldset>
+      <fieldset class="glass card">
+        <legend>Lokacija za vremensku prognozu</legend>
+        <div class="city-row">
+          <label class="stack">Grad ili mjesto<input id="city-query" placeholder="npr. Zagreb, Osijek, Split" autocomplete="off"></label>
+          <button type="button" class="btn" data-action="city-search">Pronađi</button>
+        </div>
+        <div class="places" id="places" role="listbox" aria-label="Pronađena mjesta"></div>
+        <p class="city-now" id="city-now"></p>
+        <input type="hidden" data-field="weather_city"><input type="hidden" data-field="weather_lat"><input type="hidden" data-field="weather_lon">
+        <span class="err" data-error="weather_lat"></span>
+        <p class="result" id="city-result" role="status"></p>
+        <p class="muted small">Prognoza dolazi s Open-Meteo (bez API ključa); koordinate grada postave se same.</p>
+      </fieldset>
+      <fieldset class="glass card">
+        <legend>Ušteda</legend>
+        <div class="fields">
+          <label>Cijena struje iz mreže<input data-field="price_kwh" inputmode="decimal"><small>po kWh, s porezima</small><span class="err" data-error="price_kwh"></span></label>
+          <label>Otkupna cijena viška<input data-field="feedin_price_kwh" inputmode="decimal"><small>po kWh predanom u mrežu</small><span class="err" data-error="feedin_price_kwh"></span></label>
+          <label>Valuta<input data-field="currency" maxlength="5" placeholder="€"><span class="err" data-error="currency"></span></label>
+        </div>
+        <p class="muted small">Struja koju zgrada potroši izravno sa sunca vrijedi kao cijena iz mreže, a višak predan u mrežu kao otkupna cijena. Bez mjerača potrošnje sva se proizvodnja računa po cijeni iz mreže.</p>
+      </fieldset>
+    </section>
+
+    <!-- ---------------------------------------------------------- prikaz -->
+    <section data-panel="display" class="panel">
+      <h1>Prikaz</h1>
+      <fieldset class="glass card client-only">
+        <legend>Razlučivost zaslona</legend>
+        <div class="choices" id="scales" role="radiogroup" aria-label="Razlučivost"></div>
+        <p class="muted small" data-i18n>Raspored je uvijek isti kao na Full HD zaslonu – na 2K i 4K samo je oštriji.
+          <i>Automatski</i> prilagođava prikaz veličini prozora i zaslona.</p>
+      </fieldset>
+      <fieldset class="glass card">
+        <legend>Vremenska prognoza</legend>
+        <div class="choices three" role="radiogroup" aria-label="Broj dana prognoze">
+          <label class="choice"><input type="radio" name="forecast_days" value="2"><b>2 dana</b><small>sutra i prekosutra</small></label>
+          <label class="choice"><input type="radio" name="forecast_days" value="3"><b>3 dana</b><small>sljedeća tri dana</small></label>
+          <label class="choice"><input type="radio" name="forecast_days" value="5"><b>5 dana</b><small>sljedećih pet dana</small></label>
+        </div>
+        <p class="muted small">Vrijedi za zaglavlje i widgete Vremenska prognoza i Očekivana proizvodnja na ovom zaslonu.</p>
+        <span class="err" data-error="forecast_days"></span>
+      </fieldset>
+      <fieldset class="glass card">
+        <legend>Jezik</legend>
+        <label class="stack">Jezik prikaza i postavki<select data-field="language" class="language-select"></select></label>
+        <p class="muted small">Prevode se dashboard, widgeti, postavke i izbornik widgeta. Vlastiti tekstovi (naslov, poruka) ostaju kako su upisani.</p>
+      </fieldset>
+      <fieldset class="glass card" id="images-card">
+        <legend>Slike</legend>
+        <div class="images" id="images"></div>
+        <p class="result" id="image-result" role="status"></p>
+      </fieldset>
+      <div class="client-only">
+        <fieldset class="glass card">
+          <legend>Zaslon i ponašanje</legend>
+          <label class="stack">Prikaz na zaslonu<select data-field="monitor" id="monitor"></select></label>
+          <label class="toggle"><input type="checkbox" data-field="start_fullscreen"><span></span>Pokreni preko cijelog zaslona</label>
+          <label class="toggle"><input type="checkbox" data-field="hide_idle_cursor"><span></span>Sakrij pokazivač miša kad miruje</label>
+          <label class="toggle"><input type="checkbox" data-field="keep_awake"><span></span>Ne gasi zaslon i ne uspavljuj računalo</label>
+        </fieldset>
+      </div>
+      <fieldset class="glass card client-only">
+        <legend>Tema</legend>
+        <div class="choices palettes" role="radiogroup" aria-label="Tema">
+          <label class="choice palette" data-palette="dark"><input type="radio" name="palette" value="dark"><span class="swatch"></span><b>Tamna</b><small>zadane tamne boje</small></label>
+          <label class="choice palette" data-palette="light"><input type="radio" name="palette" value="light"><span class="swatch"></span><b>Svijetla</b><small>zadane svijetle boje</small></label>
+          <label class="choice palette" data-palette="ocean"><input type="radio" name="palette" value="ocean"><span class="swatch"></span><b>Ocean</b><small>tirkizna i plava</small></label>
+          <label class="choice palette" data-palette="forest"><input type="radio" name="palette" value="forest"><span class="swatch"></span><b>Šuma</b><small>zelena</small></label>
+          <label class="choice palette" data-palette="sunset"><input type="radio" name="palette" value="sunset"><span class="swatch"></span><b>Zalazak</b><small>ružičasta i zlatna</small></label>
+          <label class="choice palette" data-palette="midnight"><input type="radio" name="palette" value="midnight"><span class="swatch"></span><b>Ponoć</b><small>ljubičasta i plava</small></label>
+          <label class="choice palette" data-palette="graphite"><input type="radio" name="palette" value="graphite"><span class="swatch"></span><b>Grafit</b><small>siva i žuta</small></label>
+          <label class="choice palette" data-palette="contrast"><input type="radio" name="palette" value="contrast"><span class="swatch"></span><b>Visoki kontrast</b><small>najbolja čitljivost</small></label>
+          <label class="choice palette" data-palette="paper"><input type="radio" name="palette" value="paper"><span class="swatch"></span><b>Papir</b><small>topla svijetla</small></label>
+          <label class="choice palette" data-palette="sky"><input type="radio" name="palette" value="sky"><span class="swatch"></span><b>Nebo</b><small>svijetloplava</small></label>
+          <label class="choice palette" data-palette="sand"><input type="radio" name="palette" value="sand"><span class="swatch"></span><b>Pijesak</b><small>bež i narančasta</small></label>
+        </div>
+        <p class="muted small">Paleta boja vrijedi za ovaj ekran: pozadina, kartice, tekst i grafovi.</p>
+        <span class="err" data-error="palette"></span>
+      </fieldset>
+      <fieldset class="glass card client-only">
+        <legend>Ikone</legend>
+        <div class="choices three icon-themes" role="radiogroup" aria-label="Ikone">
+          <label class="choice"><input type="radio" name="icon_theme" value="classic"><span class="icon-preview" data-icon-theme="classic"></span><b>Klasične</b><small>emoji ikone sustava</small></label>
+          <label class="choice"><input type="radio" name="icon_theme" value="neon"><span class="icon-preview" data-icon-theme="neon"></span><b>Hi-tech neon</b><small>u stilu ikone aplikacije</small></label>
+          <label class="choice"><input type="radio" name="icon_theme" value="iconset"><span class="icon-preview" data-icon-theme="iconset"></span><b>Hi-tech komplet</b><small>3D ikone sa sjajem</small></label>
+        </div>
+        <p class="muted small">Vrijedi za sve ikone dashboarda: snaga i proizvodnja, sunce i prognoza vremena, zapisi, ušteda i tok energije.</p>
+        <span class="err" data-error="icon_theme"></span>
+      </fieldset>
+      <fieldset class="glass card client-only">
+        <legend>Izgled nadzorne ploče</legend>
+        <div class="choices four designs" role="radiogroup" aria-label="Izgled nadzorne ploče">
+          <label class="choice"><input type="radio" name="design" value="classic"><img class="design-preview" src="designs/classic.webp" alt=""><b>Klasični</b><small>dosadašnji izgled</small></label>
+          <label class="choice"><input type="radio" name="design" value="aurora"><img class="design-preview" src="designs/aurora.webp" alt=""><b>Aurora Glass</b><small>veći brojevi, jasne boje</small></label>
+          <label class="choice"><input type="radio" name="design" value="control"><img class="design-preview" src="designs/control.webp" alt=""><b>Kontrolna soba</b><small>za veliki zaslon na zidu</small></label>
+          <label class="choice"><input type="radio" name="design" value="daylight"><img class="design-preview" src="designs/daylight.webp" alt=""><b>Dnevno svjetlo</b><small>svijetli, za prostor s puno svjetla</small></label>
+        </div>
+        <label class="toggle design-photo"><input type="checkbox" data-field="hero_photo"><span></span>Fotografija elektrane u zaglavlju (izgled „Kontrolna soba”)</label>
+        <p class="muted small">Izgled vrijedi za ovaj ekran. „Dnevno svjetlo” je uvijek svijetla tema; ostali izgledi koriste temu i paletu boja odozgo.</p>
+        <span class="err" data-error="design"></span>
+      </fieldset>
+      <fieldset class="glass card client-only">
+        <legend>Noćni način</legend>
+        <div class="choices three" role="radiogroup" aria-label="Noćni način">
+          <label class="choice"><input type="radio" name="night_mode" value="off"><b>Isključen</b><small>prikaz radi cijelu noć</small></label>
+          <label class="choice"><input type="radio" name="night_mode" value="dim"><b>Zatamnjen prikaz</b><small>crni zaslon s malim satom</small></label>
+          <label class="choice"><input type="radio" name="night_mode" value="screen_off"><b>Ugašen zaslon</b><small>monitor ili TV se gasi</small></label>
+        </div>
+        <div class="fields night-times">
+          <label>Od<input type="time" data-field="night_from"><span class="err" data-error="night_from"></span></label>
+          <label>Do<input type="time" data-field="night_to"><span class="err" data-error="night_to"></span></label>
+        </div>
+        <p class="muted small">Ujutro se prikaz sam vrati. Pomak miša ili tipka probude prikaz na 5 minuta. Bilježenje podataka radi i noću.</p>
+      </fieldset>
+    </section>
+
+    <!-- ---------------------------------------------------------- poslužitelj (samo SolarniServer.exe) -->
+    <section data-panel="server" class="panel server-only">
+      <h1>Poslužitelj</h1>
+      <p class="lead" data-i18n>Solarni poslužitelj bilježi logger i šalje podatke, naziv, naslov, logotip i slike aplikacijama Solarni monitor (Windows i Android) – u lokalnoj mreži ili preko Cloudflare tunela. Aplikacije se prijavljuju e-poštom i lozinkom korisnika s ovog popisa.</p>
+      <div class="admin-bar"><span id="admin-who"></span><button class="btn ghost" data-action="admin-logout">Odjava</button></div>
+      <fieldset class="glass card">
+        <legend>Korisnici</legend>
+        <div class="users-head">
+          <p class="muted small">Administrator dodaje korisnike i otvara postavke poslužitelja; korisnik samo gleda dashboard.
+            Blokiranje, nova lozinka i brisanje odmah odjavljuju korisnika sa svih uređaja.</p>
+          <button class="btn primary" data-action="user-add">+ Dodaj korisnika</button>
+        </div>
+        <div class="users" id="users" role="table" aria-label="Korisnici"></div>
+        <p class="result" id="users-result" role="status"></p>
+      </fieldset>
+      <fieldset class="glass card">
+        <legend>Pristup</legend>
+        <div class="fields">
+          <label>Port<input data-field="server_port" inputmode="numeric"><span class="err" data-error="server_port"></span></label>
+        </div>
+        <label class="toggle"><input type="checkbox" data-field="server_lan"><span></span>Dostupno i u lokalnoj mreži (Android i računala u istoj mreži bez tunela)</label>
+        <p class="muted small" id="server-urls"></p>
+        <p class="muted small" id="server-cert"></p>
+        <p class="status" id="server-status"></p>
+      </fieldset>
+      <fieldset class="glass card">
+        <legend>Cloudflare tunel</legend>
+        <ol class="steps">
+          <li data-i18n>Instalirajte <b>cloudflared</b>: <code>winget install Cloudflare.cloudflared</code></li>
+          <li data-i18n>Brzi tunel za probu: <code id="cf-quick">cloudflared tunnel --url http://localhost:8700</code> – adresu <code>https://….trycloudflare.com</code> upišite u klijent.</li>
+          <li data-i18n>Stalni tunel s vlastitom domenom: u Cloudflare Zero Trust → Networks → Tunnels izradite tunel, instalirajte ga kao uslugu (<code>cloudflared service install TOKEN</code>) i dodajte Public Hostname koji vodi na <code>http://localhost:8700</code>.</li>
+          <li data-i18n>U klijentu: Postavke → Mreža → <b>Solarni poslužitelj</b>, upišite adresu tunela i prijavite se e-poštom i lozinkom.</li>
+        </ol>
+      </fieldset>
+    </section>
+
+    <!-- ---------------------------------------------------------- obavijesti -->
+    <section data-panel="alerts" class="panel" id="alerts-panel" data-provider="resend">
+      <h1>Obavijesti e-poštom</h1>
+      <p class="lead">Aplikacija šalje e-poštu kad uređaj ne odgovara, kad inverter javi grešku ili kad je proizvodnja na sunčan dan sumnjivo niska. Poruke šalje zadatak za bilježenje podataka, pa stižu i kad aplikacija nije otvorena.</p>
+      <fieldset class="glass card">
+        <legend>Primatelji</legend>
+        <label class="stack">Adrese e-pošte<textarea data-field="alert_emails" rows="3" placeholder="ime.prezime@tvrtka.hr, odrzavanje@tvrtka.hr"></textarea>
+          <small>Više adresa odvojite zarezom ili novim redom (najviše 20). Obavijesti stižu i na e-poštu korisnika: na poslužitelju administratorima, na klijentu računu prijavljenom na poslužitelj.</small><span class="err" data-error="alert_emails"></span></label>
+      </fieldset>
+      <fieldset class="glass card">
+        <legend>Slanje e-pošte</legend>
+        <div class="choices two" role="radiogroup" aria-label="Slanje e-pošte">
+          <label class="choice"><input type="radio" name="mail_provider" value="resend"><b>Resend</b><small>preporučeno – bez vlastitog poslužitelja e-pošte</small></label>
+          <label class="choice"><input type="radio" name="mail_provider" value="smtp"><b>Vlastiti SMTP poslužitelj</b><small>npr. Microsoft 365 ili poslužitelj tvrtke</small></label>
+        </div>
+        <span class="err" data-error="mail_provider"></span>
+        <div class="resend-fields">
+          <div class="fields">
+            <label class="w2">API ključ servisa Resend<input id="resend_api_key" type="password" autocomplete="new-password" spellcheck="false" placeholder="re_…"><small id="resend-key-hint"></small><span class="err" data-error="resend_api_key"></span></label>
+          </div>
+          <p class="muted small">Obavijesti i greške šalju se s adrese modular@solardashboard.bid na jeziku aplikacije, a jednokratni kodovi za registraciju novih korisnika s adrese registration@solardashboard.bid. Ključ se sprema šifriran (Windows DPAPI) i nikad se ne prikazuje.</p>
+        </div>
+        <div class="test">
+          <button class="btn" data-action="test-email">Pošalji probnu poruku</button>
+          <p class="result" id="email-result" role="status"></p>
+        </div>
+      </fieldset>
+      <fieldset class="glass card smtp-fields">
+        <legend>Poslužitelj e-pošte (SMTP)</legend>
+        <div class="fields">
+          <label class="w2">Poslužitelj<input data-field="smtp_host" placeholder="smtp.office365.com"><span class="err" data-error="smtp_host"></span></label>
+          <label>Port<input data-field="smtp_port" inputmode="numeric"><span class="err" data-error="smtp_port"></span></label>
+          <label>Zaštita<select data-field="smtp_security">
+            <option value="starttls">STARTTLS (587)</option><option value="ssl">SSL/TLS (465)</option><option value="none">Bez zaštite (25)</option></select></label>
+          <label class="w2">Korisničko ime<input data-field="smtp_user" autocomplete="off"><span class="err" data-error="smtp_user"></span></label>
+          <label class="w2">Lozinka<input id="smtp_password" type="password" autocomplete="new-password"><small id="smtp-password-hint"></small><span class="err" data-error="smtp_password"></span></label>
+          <label class="w2">Pošiljatelj<input data-field="smtp_from" placeholder="solarni.monitor@tvrtka.hr"><small>prazno = korisničko ime</small><span class="err" data-error="smtp_from"></span></label>
+        </div>
+        <p class="muted small">Lozinka se sprema šifrirana (Windows DPAPI) i radi samo na ovom računalu. Pošta ide preko mrežne kartice prema internetu.</p>
+      </fieldset>
+      <fieldset class="glass card">
+        <legend>Kada poslati obavijest</legend>
+        <div class="fields">
+          <label>Uređaj ne odgovara dulje od (min)<input data-field="alert_offline_min" inputmode="numeric"><small>0 = bez ove obavijesti</small><span class="err" data-error="alert_offline_min"></span></label>
+        </div>
+        <label class="toggle"><input type="checkbox" data-field="alert_low_production"><span></span>Sumnjivo niska proizvodnja (između 14 i 17 h, manje od pola očekivanog prema prognozi)</label>
+        <label class="toggle"><input type="checkbox" data-field="alert_fault"><span></span>Inverter javi grešku (samo kad je inverter spojen izravno)</label>
+      </fieldset>
+    </section>
+
+    <!-- ---------------------------------------------------------- izvještaji -->
+    <section data-panel="reports" class="panel">
+      <h1>Izvještaji</h1>
+      <p class="lead">Mjesečni izvještaj s proizvodnjom, potrošnjom, uštedom i smanjenjem CO₂ te usporedbom s prošlim mjesecom i istim mjesecom lani. Spremite ga kao PDF (Ispis → Microsoft Print to PDF) ili kao tablicu za Excel.</p>
+      <fieldset class="glass card no-print">
+        <legend>Mjesec</legend>
+        <div class="report-bar">
+          <select id="report-month" aria-label="Mjesec"></select>
+          <button class="btn primary" data-action="report-show">Prikaži</button>
+          <button class="btn" data-action="report-print" id="report-print" disabled>🖨 Ispis / PDF</button>
+          <button class="btn" data-action="report-csv" id="report-csv" disabled>⬇ Excel (CSV)</button>
+        </div>
+        <p class="result" id="report-result" role="status"></p>
+      </fieldset>
+      <article id="report" class="report" hidden></article>
+    </section>
+
+    <!-- ---------------------------------------------------------- sustav -->
+    <section data-panel="system" class="panel client-only">
+      <h1>Sustav</h1>
+      <div class="grid2">
+        <fieldset class="glass card">
+          <legend>Pokretanje</legend>
+          <label class="toggle"><input type="checkbox" id="autostart"><span></span>Pokreni aplikaciju pri prijavi u Windows</label>
+          <p class="status" id="poller-status"></p>
+        </fieldset>
+        <fieldset class="glass card">
+          <legend>Zaštita postavki</legend>
+          <p class="muted small" id="pin-state"></p>
+          <label class="stack">Novi PIN (4–8 znamenki)<input id="pin_new" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"><span class="err" data-error="pin_new"></span></label>
+          <label class="toggle" id="pin-clear-row"><input type="checkbox" id="pin_clear"><span></span>Ukloni PIN</label>
+        </fieldset>
+      </div>
+      <fieldset class="glass card">
+        <legend>Pregled iz mreže</legend>
+        <label class="toggle"><input type="checkbox" data-field="remote_view"><span></span>Dashboard je dostupan i u pregledniku na drugim računalima i mobitelima u lokalnoj mreži</label>
+        <div class="fields">
+          <label>Port<input data-field="remote_port" inputmode="numeric"><span class="err" data-error="remote_port"></span></label>
+        </div>
+        <p class="muted small" id="remote-urls"></p>
+        <p class="small" id="remote-key"></p>
+        <p class="muted small">Pregled je samo za čitanje – postavke i raspored mijenjaju se samo u aplikaciji. Vatrozid ga dopušta samo u privatnim mrežama (posao, dom).</p>
+      </fieldset>
+      <fieldset class="glass card">
+        <legend>Podaci i sigurnosne kopije</legend>
+        <p class="status" id="db-status"></p>
+        <div class="fields">
+          <label>Dnevne kopije baze (dana)<input data-field="backup_keep_days" inputmode="numeric"><small>0 = bez kopija</small><span class="err" data-error="backup_keep_days"></span></label>
+        </div>
+        <div class="note" id="legacy-import" hidden>
+          Pronađena je povijest postojeće instalacije: <code id="legacy-path"></code>
+          <button class="btn primary" data-action="import-legacy">Uvezi tu povijest</button>
+        </div>
+        <div class="test">
+          <button class="btn" data-action="import">Uvezi povijest iz datoteke (solar.db)…</button>
+          <p class="result" id="import-result" role="status"></p>
+        </div>
+        <div class="test" id="smartlogger-import" hidden>
+          <button class="btn" data-action="import-smartlogger">Uvezi povijest sa SmartLoggera (log.zip)…</button>
+          <p class="result" id="smartlogger-result" role="status"></p>
+        </div>
+        <p class="muted small" id="smartlogger-help" hidden>Dnevna proizvodnja od puštanja u rad: u web sučelju SmartLoggera izvezite logove SmartLoggera (Maintenance → Device Log → Export) i ovdje odaberite preuzetu datoteku log.zip. Dani koje je poller već zabilježio ostaju kakvi jesu. Inverter spojen bez SmartLoggera povijest ne daje.</p>
+        <div class="row-start">
+          <button class="btn ghost" data-action="open-data">Otvori mapu podataka</button>
+          <button class="btn ghost" data-action="open-logs">Otvori zapise (logove)</button>
+        </div>
+        <p class="muted small" id="paths"></p>
+      </fieldset>
+    </section>
+  </main>
+
+  <footer class="bar">
+    <p class="result" id="save-result" role="status"></p>
+    <button class="btn" data-action="close" id="btn-cancel">Odustani</button>
+    <button class="btn wizard-only" data-action="back" id="btn-back">← Natrag</button>
+    <button class="btn primary wizard-only" data-action="next" id="btn-next">Dalje →</button>
+    <button class="btn primary" data-action="save" id="btn-save">Spremi</button>
+  </footer>
+</div>
+
+<!-- Solarni poslužitelj: novi korisnik ili izmjena -->
+<dialog class="glass user-dialog" id="user-dialog" aria-labelledby="user-dialog-title">
+  <form id="user-form" method="dialog">
+    <h2 id="user-dialog-title">Novi korisnik</h2>
+    <div class="fields">
+      <label>Ime<input data-user="first_name" autocomplete="off"><span class="err" data-user-error="first_name"></span></label>
+      <label>Prezime<input data-user="last_name" autocomplete="off"><span class="err" data-user-error="last_name"></span></label>
+      <label class="w2">E-pošta (korisničko ime)<input data-user="email" type="email" autocomplete="off" spellcheck="false"><span class="err" data-user-error="email"></span></label>
+      <label>Lozinka<input data-user="password" type="password" autocomplete="new-password"><small id="user-password-hint"></small><span class="err" data-user-error="password"></span></label>
+      <label>Ponovite lozinku<input data-user="password2" type="password" autocomplete="new-password"><span class="err" data-user-error="password2"></span></label>
+      <label class="w2">Uloga<select data-user="role"><option value="user">Korisnik – gleda dashboard</option><option value="admin">Administrator – i korisnici i postavke poslužitelja</option></select><span class="err" data-user-error="role"></span></label>
+      <label class="toggle w4"><input type="checkbox" data-user="totp_required"><span></span>Dvofaktorska prijava (kod iz aplikacije autentifikatora, npr. Google Authenticator) – korisnik je postavlja pri sljedećoj prijavi skeniranjem QR koda</label>
+      <p class="small muted w4 totp-admin-note" hidden>Za administratora je dvofaktorska prijava obavezna.</p>
+    </div>
+    <div class="totp-admin" id="user-pw-admin" hidden>
+      <button type="button" class="btn ghost" data-action="user-reset-password">Pošalji novi kod e-poštom (zaboravljena lozinka)</button>
+      <button type="button" class="btn ghost" data-action="user-logout-all">Odjavi sa svih uređaja</button>
+    </div>
+    <div class="totp-admin" id="user-totp-admin" hidden>
+      <p class="muted small" id="user-totp-state"></p>
+      <button type="button" class="btn ghost" data-action="user-reset-totp">Poništi dvofaktorsku prijavu (izgubljen mobitel)</button>
+    </div>
+    <p class="result" id="user-result" role="status"></p>
+    <div class="row-end">
+      <button type="button" class="btn" data-action="user-cancel">Odustani</button>
+      <button type="submit" class="btn primary" id="user-submit">Spremi</button>
+    </div>
+  </form>
+</dialog>
+<script src="i18n.js"></script>
+<script src="report.js"></script>
+<script src="themes.js"></script>
+<script src="colors.js"></script>
+<script src="icons.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script src="bridge.js"></script>
+<script src="window.js"></script>
+<script src="settings.js"></script>
+<script src="ha-settings.js"></script>
+</body>
+</html>

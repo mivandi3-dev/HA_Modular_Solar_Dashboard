@@ -1,0 +1,11 @@
+configuration:
+  server_url:
+    name: Adresa Solarnog poslužitelja
+    description: Poslužitelj add-on na istom Home Assistantu – http://172.30.32.1:8700; zasebno računalo – http://IP:8700.
+  api_token:
+    name: Pristupni ključ API-ja
+    description: Prazno = čita se iz /share/solarni/api_token (poslužitelj na istom HA). Za zasebno računalo upišite ključ poslužitelja.
+  log_level:
+    name: Razina zapisa
+network:
+  8600/tcp: Pregled iz lokalne mreže (TV bez HA računa, samo čitanje, pristupni ključ)

@@ -1,0 +1,259 @@
+/* Izvezeno iz Python verzije (solar/ui.py) – tema: dark. Ne uređivati ručno. */
+
+
+/* Font je u aplikaciji (static/fonts, OFL licenca) – izgled ne ovisi o internetu. */
+@font-face { font-family: 'Plus Jakarta Sans'; font-weight: 200 800; font-display: block;
+              src: url('vendor/PlusJakartaSans.ttf') format('truetype'); }
+:root {
+  --card: rgba(22,31,51,.74); --card-solid: #1A2540; --border: rgba(255,255,255,.07); --line: rgba(255,255,255,.08);
+  --shadow: 0 10px 30px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.3); --text: #E6EAF2; --muted: #94A3B8; --greet: #CBD5E1;
+  --blue: #4F86F7; --accent: #7C9CFF; --green: #22C55E; --amber: #F59E0B; --red: #F87171;
+}
+
+/* ---- kiosk: bez izbornika, alatne trake, bočne trake i indikatora učitavanja ---- */
+header[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"],
+[data-testid="stStatusWidget"], [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"],
+#MainMenu, footer { display: none !important; }
+html, body, .stApp { overflow: hidden; cursor: none; }
+[data-stale="true"], .stale-element { opacity: 1 !important; transition: none !important; }
+
+.stApp { background: radial-gradient(1200px 600px at 85% 0%, #16264A 0%, transparent 60%), linear-gradient(180deg, #0B1120 0%, #0D1424 100%); color: var(--text); }
+.stApp, .stApp p, .stApp div, .stApp span { font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif; }
+.stMarkdown, .stMarkdown p { color: var(--text); }
+.block-container { padding: 0 26px !important; max-width: 100% !important; min-height: 100vh;
+                    display: flex; flex-direction: column; justify-content: center; }
+.block-container > [data-testid="stVerticalBlock"] { flex: none; justify-content: center; }
+/* Nevidljivi elementi (CSS, skripta sata) ne smiju dodavati razmak između redova i gurati sadržaj dolje. */
+[data-testid="stLayoutWrapper"]:has(> .st-key-css), [data-testid="stLayoutWrapper"]:has(> .st-key-live-clock-js),
+[data-testid="stLayoutWrapper"]:has(> .st-key-widget-css), [data-testid="stLayoutWrapper"]:has(> .st-key-grid-css),
+[data-testid="stLayoutWrapper"]:has(> .st-key-layout-refresh),
+[data-testid="stLayoutWrapper"]:has(> .st-key-pages-js) { display: none !important; }
+[data-testid="stVerticalBlock"] { gap: 14px; }
+/* ---- mreža widgeta ispod zaglavlja (raspored: solar/layout.py, položaji: solar/widgets/render.py) ---- */
+/* Stranice rasporeda leže jedna preko druge; vidljiva je ona iz html[data-page] (desktop/web/pages.js). */
+.st-key-pages { display: grid !important; gap: 0 !important; }
+.st-key-pages > * { grid-area: 1 / 1; min-width: 0; visibility: hidden; opacity: 0;
+                    transition: opacity .7s ease, visibility 0s linear .7s; }
+html[data-page="0"] .st-key-pages > :is(.st-key-grid-p0, :has(> .st-key-grid-p0)),
+html:not([data-page]) .st-key-pages > :is(.st-key-grid-p0, :has(> .st-key-grid-p0)),
+html[data-page="1"] .st-key-pages > :is(.st-key-grid-p1, :has(> .st-key-grid-p1)),
+html[data-page="2"] .st-key-pages > :is(.st-key-grid-p2, :has(> .st-key-grid-p2)),
+html[data-page="3"] .st-key-pages > :is(.st-key-grid-p3, :has(> .st-key-grid-p3)),
+html[data-page="4"] .st-key-pages > :is(.st-key-grid-p4, :has(> .st-key-grid-p4)),
+html[data-page="5"] .st-key-pages > :is(.st-key-grid-p5, :has(> .st-key-grid-p5)) { visibility: visible; opacity: 1; transition: opacity .7s ease; }
+[class*="st-key-grid-p"] { display: grid !important; grid-template-columns: repeat(12, minmax(0, 1fr));
+               grid-template-rows: repeat(5, 130px); gap: 14px !important; }
+[class*="st-key-grid-p"] > * { min-width: 0; }
+[class*="st-key-w-"] { gap: 0 !important; height: 100%; }
+[data-testid="stHorizontalBlock"] { gap: 14px; }
+.stMarkdown p { margin: 0; }
+[data-testid="stMarkdownContainer"] { margin-bottom: 0 !important; }
+
+.glass {
+  background: var(--card); border: 1px solid var(--border); border-radius: 22px;
+  box-shadow: var(--shadow); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+}
+
+/* ---- slojevi: prvi (nepromjenjivi: slike, animacije) ispod, drugi (podaci) preko njega ----
+   Streamlit pri promjeni ponovno iscrta cijeli HTML elementa; ovako se slike ne iscrtavaju iznova. */
+.st-key-hero, [class*="st-key-flow-"] { position: relative; gap: 0 !important; }
+.st-key-hero > :first-child, [class*="st-key-flow-"] > :first-child { position: absolute !important; inset: 0; }
+.st-key-hero > :last-child, [class*="st-key-flow-"] > :last-child { position: relative; }
+.hero-bg { position: absolute; inset: 0; border-radius: 26px;
+            background-size: cover; background-position: center 45%; }
+.card.overlay { background: none; border-color: transparent; box-shadow: none;
+                 backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+/* ---- zaglavlje ---- */
+.hero {
+  position: relative; height: 318px; border-radius: 26px; overflow: hidden;
+  background-size: cover; background-position: center 45%;
+  display: flex; justify-content: space-between; padding: 22px 24px;
+}
+.hero-left { display: flex; flex-direction: column; justify-content: space-between; gap: 16px; }
+.greet { font-size: 1.05rem; color: var(--greet); font-weight: 500; }
+.live-clock { font-variant-numeric: tabular-nums; }
+.st-key-live-clock-js { display: none !important; }
+.hero h1 { font-size: 2.3rem; line-height: 1.12; font-weight: 600; margin: .35rem 0 0; padding: 0;
+           letter-spacing: -.02em; }
+.hero h1, .hero h1 span:not(.hl) { color: var(--text) !important; }
+.hero h1 .hl { color: var(--accent); }
+
+.site-card { display: flex; flex-direction: column; gap: 8px; padding: 12px 22px; width: 400px; box-sizing: border-box; }
+.site-card .name { font-size: .9rem; color: var(--muted); }
+.site-card .logo { display: block; width: 100%; height: auto; max-height: 96px; object-fit: contain;
+                    object-position: left center; }
+.site-card .big { font-size: 1.5rem; font-weight: 700; }
+.site-card .facts { display: flex; gap: 22px; }
+.fact { border-left: 3px solid var(--line); padding-left: 10px; }
+.fact.ok { border-color: var(--green); } .fact.off { border-color: var(--muted); } .fact.err { border-color: var(--red); }
+.fact .k { font-size: .78rem; color: var(--muted); } .fact .v { font-size: 1.02rem; font-weight: 600; }
+
+.weather { width: 330px; padding: 16px 20px; display: flex; flex-direction: column; justify-content: space-between; }
+.weather .date { text-align: center; font-size: .92rem; font-weight: 500; color: var(--greet); }
+.weather .now { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 4px 0; }
+.weather .icon { font-size: 2.7rem; line-height: 1; }
+.weather .temp { font-size: 2rem; font-weight: 700; line-height: 1; }
+.weather .cond { font-size: .88rem; color: var(--muted); }
+.weather .row { display: flex; justify-content: space-between; font-size: .88rem; color: var(--muted); }
+.weather .row b { color: var(--text); font-weight: 600; }
+.weather .days { display: flex; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 6px; }
+.weather .day { text-align: center; font-size: .8rem; color: var(--muted); }
+.weather .day .i { font-size: 1.3rem; } .weather .day b { color: var(--text); }
+
+/* ---- traka pokazatelja ---- */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); padding: 14px 6px; height: var(--h, auto);
+         box-sizing: border-box; align-items: center; }
+.kpis.single { grid-template-columns: 1fr; }
+.kpis.single .kpi { border-right: 0; padding: 2px 18px; }
+.kpi { display: grid; grid-template-columns: auto 1fr auto; column-gap: 14px; align-items: center;
+        padding: 2px 22px; border-right: 1px solid var(--line); }
+.kpi:last-child { border-right: 0; }
+.tile { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; font-size: 1.45rem; flex: none; }
+.kpi .label { font-size: .92rem; color: var(--muted); }
+.kpi .value { font-size: 1.85rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.15; }
+.kpi .value small { font-size: 1rem; font-weight: 600; color: var(--muted); margin-left: 4px; }
+.kpi .sub { grid-column: 2 / 4; font-size: .82rem; color: var(--muted); margin-top: 2px; }
+.up { color: var(--green); font-weight: 600; } .down { color: var(--red); font-weight: 600; }
+.warn { color: var(--amber); font-weight: 600; }
+
+/* ---- kartice donjih redova ---- */
+.card, [class*="st-key-card-"] {
+  background: var(--card); border: 1px solid var(--border); border-radius: 22px;
+  box-shadow: var(--shadow); height: var(--h, 278px); overflow: hidden; box-sizing: border-box;
+}
+.card { padding: 18px 22px; }
+[class*="st-key-card-"] { padding: 16px 20px 0 !important; gap: 0 !important; }
+.card-title { font-size: 1.12rem; font-weight: 600; color: var(--text); display: flex; justify-content: space-between; align-items: baseline; }
+.card-title small { font-size: .82rem; font-weight: 500; color: var(--muted); }
+.headline { display: flex; align-items: baseline; gap: 14px; margin-top: 4px; }
+.headline .big { font-size: 1.9rem; font-weight: 700; letter-spacing: -.01em; }
+.headline .big small { font-size: 1rem; color: var(--muted); font-weight: 600; margin-left: 3px; }
+.headline .meta { font-size: .85rem; color: var(--muted); }
+
+.list { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+.item { display: flex; align-items: center; gap: 16px; }
+.item .k { font-size: .88rem; color: var(--muted); }
+.item .v { font-size: 1.3rem; font-weight: 700; } .item .v small { font-size: .85rem; color: var(--muted); font-weight: 600; margin-left: 3px; }
+
+/* ---- brzinomjer ---- */
+.speedo { display: flex; align-items: center; justify-content: center; gap: 22px;
+           height: calc(var(--h, 278px) - 64px); margin-top: 4px; }
+.speedo svg { height: 100%; width: auto; flex: none; }
+
+/* ---- tok energije ---- */
+.flow { position: relative; height: calc(var(--h, 278px) - 36px); container-type: size; }
+.flow svg.lines { position: absolute; inset: 0; width: 100%; height: 100%; }
+.flow .building { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); height: 100%;
+                   filter: drop-shadow(0 12px 24px rgba(0,0,0,.45)); }
+.node { position: absolute; display: flex; align-items: center; gap: 12px; padding: 10px 16px;
+         background: var(--card-solid); border: 1px solid var(--border); border-radius: 16px;
+         box-shadow: var(--shadow); min-width: 190px; }
+.node .i { font-size: 1.6rem; } .node .k { font-size: .78rem; color: var(--muted); }
+.node .v { font-size: 1.2rem; font-weight: 700; }
+.node.tl { left: 0; top: 8%; } .node.bl { left: 0; bottom: 8%; }
+.node.tr { right: 0; top: 8%; } .node.br { right: 0; bottom: 8%; }
+@keyframes dash { to { stroke-dashoffset: -24; } }
+.flow path.live { stroke-dasharray: 6 6; animation: dash 1.2s linear infinite; }
+.flow path.live.rev { animation-direction: reverse; }  /* predaja u mrežu: od zgrade prema van */
+/* Strelice: SVG je rastegnut (preserveAspectRatio="none"), pa su strelice HTML elementi koji putuju
+   po točkama krivulje (keyframes iz energy_flow), a kut smjera linije računa se iz stvarnih dimenzija
+   okvira (cqw/cqh). --dx/--dy su registrirani da bi se kut glatko mijenjao između točaka. */
+@property --dx { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --dy { syntax: "<number>"; inherits: false; initial-value: 0; }
+.flow .arrow { position: absolute; width: 11px; height: 13px; background: #71BF43;
+                clip-path: polygon(0 0, 100% 50%, 0 100%, 35% 50%); translate: -50% -50%;
+                rotate: atan2(calc(var(--dy) * 1cqh), calc(var(--dx) * 1cqw)); }
+
+.status-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; position: relative; margin-right: 6px; }
+.status-dot.on { background: var(--green); }
+.status-dot.on::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--green);
+                         animation: pulse 1.8s ease-out infinite; }
+.status-dot.off { background: var(--muted); }
+@keyframes pulse { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(3); opacity: 0; } }
+.empty { height: 170px; display: grid; place-items: center; color: var(--muted); }
+
+
+/* ---- danas prema prosjeku ---- */
+.goal-body { display: flex; align-items: center; gap: 22px; height: calc(var(--h) - 64px); }
+.goal-body .ring { height: 100%; max-height: 190px; width: auto; flex: none; }
+.goal-text .k { font-size: .8rem; color: var(--muted); }
+.goal-text .v { font-size: 1.35rem; font-weight: 700; margin-bottom: 6px; }
+.goal-text .v small { font-size: .82rem; color: var(--muted); margin-left: 3px; font-weight: 600; }
+.goal-text .verdict { font-size: .86rem; font-weight: 600; color: var(--green); }
+
+/* ---- ekvivalenti ---- */
+.eq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; margin-top: 14px;
+           height: calc(var(--h) - 76px); align-content: center; }
+.eq { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.eq .i { font-size: 1.7rem; flex: none; }
+.eq .v { font-size: 1.35rem; font-weight: 700; line-height: 1.1; }
+.eq .v small { font-size: .82rem; color: var(--muted); margin-left: 4px; font-weight: 600; }
+.eq .k { font-size: .76rem; color: var(--muted); line-height: 1.25; }
+
+/* ---- znate li ---- */
+.facts-body { position: relative; height: calc(var(--h) - 60px); container-type: size; }
+.fun-fact { position: absolute; inset: 0; margin: 0 !important; display: flex; align-items: center; opacity: 0;
+        font-size: clamp(.95rem, 13cqh, 1.45rem); line-height: 1.4; font-weight: 500; color: var(--text) !important; }
+
+/* ---- sat ---- */
+.clock-w { display: flex; flex-direction: column; justify-content: center; align-items: center; container-type: size;
+           padding: 8px 16px !important; }
+.clock-w .time { font-size: min(52cqh, 19cqw); font-weight: 700; letter-spacing: -.02em; line-height: 1;
+                 font-variant-numeric: tabular-nums; }
+.clock-w .date { font-size: min(13cqh, 5.2cqw); color: var(--muted); margin-top: 6px; text-align: center; }
+
+/* ---- poruka ---- */
+.message { display: flex; flex-direction: column; justify-content: center; container-type: size; padding: 14px 26px !important;
+           background: linear-gradient(135deg, rgba(113,191,67,.16), transparent 60%), var(--card) !important; }
+.message .m-title { font-size: min(28cqh, 7cqw); font-weight: 700; color: var(--green); line-height: 1.15; }
+.message .m-text { font-size: min(16cqh, 4cqw); color: var(--text); margin-top: 4px; line-height: 1.35; }
+
+/* ---- sunce ---- */
+.sun-body { display: flex; align-items: center; gap: 18px; height: calc(var(--h) - 60px); }
+.sun-arc { height: 100%; max-height: 180px; width: auto; flex: 1 1 auto; min-width: 0; }
+.sun-facts { display: flex; flex-direction: column; gap: 5px; flex: none; min-width: 150px; }
+.sun-facts div { display: flex; justify-content: space-between; gap: 14px; font-size: .84rem; color: var(--muted); }
+.sun-facts b { color: var(--text); font-weight: 600; }
+
+/* ---- očekivana proizvodnja ---- */
+.fc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; height: calc(var(--h) - 60px);
+           margin-top: 6px; }
+.fc-day { display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 0; }
+.fc-day .name { font-size: .84rem; color: var(--muted); font-weight: 600; }
+.fc-day .i { font-size: 1.35rem; }
+.fc-day .bar { flex: 1; width: 28px; border-radius: 8px; background: var(--line); display: flex; align-items: flex-end;
+               overflow: hidden; min-height: 20px; }
+.fc-day .bar span { display: block; width: 100%; background: #71BF43; border-radius: 8px; }
+.fc-day .v { font-size: 1.05rem; font-weight: 700; }
+.fc-day .v small { font-size: .74rem; color: var(--muted); margin-left: 3px; }
+.fc-day .so-far { font-size: .72rem; color: var(--muted); }
+
+/* ---- prognoza ---- */
+.wx-list { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+.wx-row { display: grid; grid-template-columns: 92px 34px 1fr 40px 34px 64px 50px; align-items: center; gap: 6px;
+          font-size: .88rem; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.wx-row:last-child { border-bottom: 0; }
+.wx-row .name { font-weight: 600; } .wx-row .i { font-size: 1.3rem; }
+.wx-row .label { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wx-row .muted { color: var(--muted); font-size: .8rem; }
+
+/* ---- stanje sustava ---- */
+.status-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.status-list div { display: flex; justify-content: space-between; gap: 12px; font-size: .86rem; color: var(--muted); }
+.status-list b { color: var(--text); font-weight: 600; text-align: right; }
+
+/* ---- widget koji se nije mogao iscrtati ---- */
+.widget-error { display: grid; place-items: center; text-align: center; color: var(--muted); font-size: .9rem; }
+
+/* ---- C++ verzija: isti razredi kao Streamlit, bez njegovih omotača ---- */
+html, body { margin: 0; height: 100%; }
+body { background: #0B1120; }
+.stApp { position: fixed; inset: 0; }
+.block-container { gap: 14px; box-sizing: border-box; }
+.hero-wrap { position: relative; }
+.hero-layer { position: relative; }
+[class*="st-key-flow-"] { position: relative; height: 100%; }
+[class*="st-key-card-"] { box-sizing: border-box; display: flex; flex-direction: column; }
+[class*="st-key-card-"] .plot { flex: 1; min-height: 0; }
+.loading { position: fixed; inset: 0; display: grid; place-items: center; color: #94A3B8; font: 15px 'Segoe UI', sans-serif; }

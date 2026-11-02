@@ -1,0 +1,38 @@
+/* 5.1 – izgled „Aurora Glass” (Postavke → Prikaz → Izgled nadzorne ploče). Učitava se uz dashboard-dark/light.css.
+   Ista struktura kao klasični izgled, jača hijerarhija: veći brojevi, naslovi pokazatelja velikim slovima, obojena traka po
+   značenju, staklene kartice i deblje linije grafova. Boje dolaze iz teme i palete (var(--…)). */
+html[data-design="aurora"] .stApp {
+  background: radial-gradient(1400px 700px at 80% -10%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 60%),
+              radial-gradient(900px 600px at 0% 110%, color-mix(in srgb, var(--green) 14%, transparent), transparent 60%),
+              var(--page-bg, #070C1C);
+}
+html[data-design="aurora"] .glass, html[data-design="aurora"] .card, html[data-design="aurora"] [class*="st-key-card-"] {
+  border-radius: 24px; border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+/* zaglavlje */
+html[data-design="aurora"] .hero h1 { font-size: 2.6rem; font-weight: 700; letter-spacing: -.03em; }
+html[data-design="aurora"] .hero h1 .hl {
+  background: linear-gradient(90deg, var(--accent), #7DF9FF); -webkit-background-clip: text; background-clip: text; color: transparent !important;
+}
+html[data-design="aurora"] .hero-bg { border-radius: 28px; }
+html[data-design="aurora"] .weather .temp { font-size: 2.3rem; }
+/* traka pokazatelja: velik broj, oznaka velikim slovima, obojena crta po značenju */
+html[data-design="aurora"] .kpi { position: relative; }
+html[data-design="aurora"] .kpi::before { content: ""; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 4px; border-radius: 4px;
+  background: var(--green); }
+html[data-design="aurora"] .kpi:nth-child(3)::before, html[data-design="aurora"] .kpi:nth-child(4)::before { background: var(--blue); }
+html[data-design="aurora"] .kpi .label { text-transform: uppercase; letter-spacing: .08em; font-weight: 700; font-size: .82rem; }
+html[data-design="aurora"] .kpi .value { font-size: 2.25rem; font-weight: 800; }
+html[data-design="aurora"] .tile { border-radius: 16px; }
+/* kartice */
+html[data-design="aurora"] .card-title { font-size: 1.18rem; font-weight: 700; }
+html[data-design="aurora"] .headline .big { font-size: 2.2rem; font-weight: 800; }
+html[data-design="aurora"] .item .v { font-size: 1.4rem; font-weight: 800; }
+html[data-design="aurora"] .node { border-radius: 18px; border-color: color-mix(in srgb, var(--accent) 22%, transparent); }
+html[data-design="aurora"] .node .v { font-size: 1.3rem; font-weight: 800; }
+html[data-design="aurora"] .plot .scatterlayer .js-line { stroke-width: 3px !important; }
+html[data-design="aurora"] .speedo svg { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--green) 35%, transparent)); }
+
+/* sloj s podacima preko crteža (tok energije) ostaje proziran – inače prekrije ili zamuti crtež */
+html[data-design="aurora"] .card.overlay { background: none !important; border-color: transparent; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }

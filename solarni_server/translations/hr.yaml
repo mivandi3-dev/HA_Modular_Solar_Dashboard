@@ -1,0 +1,17 @@
+configuration:
+  api_token:
+    name: Pristupni ključ API-ja
+    description: Prazno = poslužitelj ga izradi sam i zapiše u /share/solarni/api_token (dashboard ga čita sam).
+  publish_sensors:
+    name: Senzori u Home Assistantu
+    description: Snaga, energija danas/ukupno, mreža, baterija – za Energy nadzornu ploču i automatizacije.
+  ha_notify:
+    name: Obavijesti u Home Assistantu
+    description: persistent_notification (obavijest u HA) ili notify.<usluga> (npr. notify.mobile_app_mobitel – push na mobitel); prazno = isključeno. Šalje se uz e-poštu.
+  compact_after_days:
+    name: Sažmi povijest stariju od (dana)
+    description: Očitanja starija od toga sažimaju se na 5-minutne prosjeke (dnevni vrh ostaje) – manja baza i kopije. 0 = nikad.
+  log_level:
+    name: Razina zapisa
+network:
+  8700/tcp: API Solarnog poslužitelja (dashboard)

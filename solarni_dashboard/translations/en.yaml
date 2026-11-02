@@ -1,0 +1,11 @@
+configuration:
+  server_url:
+    name: Solar server address
+    description: Server add-on on the same Home Assistant – http://172.30.32.1:8700; separate machine – http://IP:8700.
+  api_token:
+    name: API access key
+    description: Empty = read from /share/solarni/api_token (server on the same HA). For a separate machine enter the server's key.
+  log_level:
+    name: Log level
+network:
+  8600/tcp: View from the local network (TV without an HA account, read-only, access key)

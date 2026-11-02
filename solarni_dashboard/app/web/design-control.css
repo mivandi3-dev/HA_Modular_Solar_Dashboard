@@ -1,0 +1,75 @@
+/* 5.1 – izgled „Kontrolna soba” (Postavke → Prikaz → Izgled nadzorne ploče): za veliki zaslon koji se gleda s udaljenosti.
+   Gotovo crna podloga s tankom tehničkom mrežom, neonski cijan i zelena, brojevi u monospace pismu (ne „skaču” pri osvježavanju),
+   oznake velikim slovima. Zaglavlje je niska traka: naslov lijevo, elektrana i prognoza poravnate UZ VRH desno.
+   html[data-hero-photo="0"]: zaglavlje bez fotografije elektrane (izbor u postavkama). */
+html[data-design="control"] {
+  --card: rgba(6, 14, 22, .92); --card-solid: #050B12; --border: rgba(0, 229, 255, .18); --line: rgba(0, 229, 255, .10);
+  --text: #E9FBFF; --muted: #7393A6; --greet: #9EE9F5; --accent: #00E5FF; --green: #39FF88;
+  --shadow: inset 0 1px 0 rgba(0, 229, 255, .10), 0 0 0 1px rgba(0, 0, 0, .6);
+}
+html[data-design="control"] .stApp {
+  background:
+    linear-gradient(rgba(0, 229, 255, .045) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, rgba(0, 229, 255, .045) 1px, transparent 1px) 0 0 / 48px 48px,
+    radial-gradient(1200px 600px at 50% -20%, rgba(0, 229, 255, .12), transparent 60%), #03070C !important;
+}
+html[data-design="control"] .glass, html[data-design="control"] .card, html[data-design="control"] [class*="st-key-card-"] {
+  border-radius: 10px; backdrop-filter: none; -webkit-backdrop-filter: none; position: relative;
+}
+html[data-design="control"] .card::after, html[data-design="control"] .kpis::after {
+  content: ""; position: absolute; top: -1px; left: 14px; width: 46px; height: 2px; background: var(--accent); box-shadow: 0 0 12px var(--accent);
+}
+/* brojevi: monospace */
+html[data-design="control"] .kpi .value, html[data-design="control"] .headline .big, html[data-design="control"] .item .v,
+html[data-design="control"] .node .v, html[data-design="control"] .live-clock, html[data-design="control"] .weather .temp,
+html[data-design="control"] .speedo text, html[data-design="control"] .eq .v, html[data-design="control"] .goal-text .v {
+  font-family: "Cascadia Mono", Consolas, ui-monospace, monospace !important; letter-spacing: -.02em;
+}
+html[data-design="control"] .kpi .label, html[data-design="control"] .card-title {
+  text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--muted);
+}
+html[data-design="control"] .card-title small { text-transform: uppercase; letter-spacing: .1em; }
+html[data-design="control"] .kpi .value { font-size: 2.5rem; font-weight: 700; text-shadow: 0 0 22px rgba(0, 229, 255, .25); }
+html[data-design="control"] .kpi .value small, html[data-design="control"] .headline .big small { color: var(--accent); }
+html[data-design="control"] .headline .big { font-size: 2.4rem; }
+html[data-design="control"] .tile { background: transparent !important; border: 1px solid var(--border); border-radius: 8px; }
+html[data-design="control"] .node { border-radius: 8px; background: #050B12; }
+html[data-design="control"] .status-dot.on, html[data-design="control"] .status-dot.on::after { background: var(--green); box-shadow: 0 0 10px var(--green); }
+
+/* ---- zaglavlje kao traka: naslov lijevo, elektrana i prognoza uz VRH desno ---- */
+html[data-design="control"] .hero {
+  height: auto; min-height: 0; padding: 16px 20px; gap: 14px; align-items: flex-start; border-radius: 12px;
+  border: 1px solid var(--border);
+}
+html[data-design="control"] .hero-bg { border-radius: 12px; }
+html[data-design="control"] .hero-left { flex: 1; flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 14px; }
+html[data-design="control"] .hero h1 { font-size: 1.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-top: .2rem; }
+html[data-design="control"] .hero h1 .hl { color: var(--green) !important; text-shadow: 0 0 18px rgba(57, 255, 136, .45); }
+html[data-design="control"] .greet { color: var(--accent); }
+html[data-design="control"] .site-card { width: auto; min-width: 260px; max-width: 420px; padding: 10px 16px; align-self: flex-start; }
+html[data-design="control"] .site-card .logo { max-height: 56px; }
+html[data-design="control"] .weather { width: auto; min-width: 360px; padding: 10px 16px; align-self: flex-start; gap: 4px; }
+html[data-design="control"] .weather .date { text-align: left; }
+html[data-design="control"] .weather .now { justify-content: flex-start; }
+html[data-design="control"] .weather .icon { font-size: 2rem; }
+/* s fotografijom: tamniji sloj, traka viša da se fotografija vidi */
+html[data-design="control"][data-hero-photo="1"] .hero { min-height: 200px; }
+html[data-design="control"][data-hero-photo="1"] .hero-bg::after {
+  content: ""; position: absolute; inset: 0; border-radius: 12px;
+  background: linear-gradient(180deg, rgba(3, 7, 12, .35), rgba(3, 7, 12, .78)), rgba(0, 229, 255, .04);
+}
+/* bez fotografije: tamna traka s tankim cijan sjajem */
+html[data-design="control"][data-hero-photo="0"] .hero-bg {
+  background-image: linear-gradient(90deg, rgba(0, 229, 255, .10), rgba(57, 255, 136, .05)), linear-gradient(#050B12, #050B12) !important;
+}
+
+/* sloj s podacima preko crteža (tok energije) ostaje proziran – inače prekrije ili zamuti crtež */
+html[data-design="control"] .card.overlay { background: none !important; border-color: transparent; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+/* uski zaslon (mobitel uspravno, android-bridge.js): zaglavlje u stupcu, elektrana i prognoza ispod naslova */
+@media (max-width: 900px) {
+  html[data-design="control"] .hero { flex-direction: column; }
+  html[data-design="control"] .hero-left { flex-direction: column; }
+  html[data-design="control"] .hero h1 { font-size: 1.35rem; }
+  html[data-design="control"] .site-card, html[data-design="control"] .weather { width: 100%; min-width: 0; max-width: none; box-sizing: border-box; }
+}

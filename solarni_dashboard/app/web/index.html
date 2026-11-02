@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+  <!-- 5.0.1 (audit W-06): samo vlastite skripte, bez vanjskih veza -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://data.solari https://app.solari data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Solarni monitor</title>
+<link id="theme-css" rel="stylesheet" href="dashboard-dark.css">
+<link rel="stylesheet" href="devices.css">
+<link id="design-css" rel="stylesheet">
+</head>
+<body>
+<div class="stApp">
+  <main class="block-container" style="visibility:hidden">
+    <section class="hero-wrap" aria-label="Zaglavlje"><div class="hero-bg-layer"></div><div class="hero-layer"></div></section>
+    <section class="st-key-pages" aria-label="Widgeti"></section>
+  </main>
+</div>
+<div class="loading">Pokrećem dashboard…</div>
+<script src="vendor/plotly-basic.min.js"></script>
+<script src="themes.js"></script>
+<script src="colors.js"></script>
+<script src="i18n.js"></script>
+<script src="bridge.js"></script>
+<script src="icons.js"></script>
+<script src="components.js"></script>
+<script src="charts.js"></script>
+<script src="widgets.js"></script>
+<script src="dashboard.js"></script>
+<script src="pages.js"></script>
+</body>
+</html>

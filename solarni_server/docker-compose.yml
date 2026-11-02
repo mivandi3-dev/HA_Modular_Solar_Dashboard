@@ -1,0 +1,19 @@
+# Solarni poslužitelj kao zasebna aplikacija (npr. na drugom Linux računalu u mreži elektrane).
+# Pristupni ključ za dashboard: docker compose exec solarni-server cat /data/api_token
+# → upišite ga u opciju "api_token" add-ona Solarni monitor, a "server_url" = http://<IP ovog računala>:8700
+services:
+  solarni-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.standalone
+    container_name: solarni-server
+    restart: unless-stopped
+    network_mode: host          # Modbus/HTTP prema uređajima i izbor mrežne kartice
+    environment:
+      TZ: Europe/Zagreb
+      SOLARI_PORT: "8700"
+    volumes:
+      - ./data:/data
+    # off-grid uređaji (USB-serijski kabel):
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0
